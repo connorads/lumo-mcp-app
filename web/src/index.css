@@ -151,6 +151,21 @@ body {
   display: block;
 }
 
+/* ============================================================
+   Mind map widget
+   ============================================================ */
+.ill-mindmap-container {
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+}
+
+.ill-mindmap-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
 .ill-explanation {
   font-size: 13px;
   color: var(--text-muted);
