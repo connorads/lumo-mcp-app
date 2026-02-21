@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, cleanup } from "@testing-library/react";
+import { render, screen, fireEvent, cleanup, act } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 import IlluminateDiagram from "./illuminate-diagram.js";
 
@@ -7,18 +7,27 @@ vi.mock("skybridge/web", async (importOriginal) => {
   return { ...mod, mountWidget: vi.fn() };
 });
 
+// Mermaid mock: returns an SVG with two .node elements
+vi.mock("mermaid", () => ({
+  default: {
+    initialize: vi.fn(),
+    render: vi.fn(),
+  },
+}));
+
+const MOCK_SVG =
+  '<svg><g class="node" id="flowchart-AuthServer-1"><span class="nodeLabel">Auth Server</span></g>' +
+  '<g class="node" id="flowchart-ClientApp-2"><span class="nodeLabel">Client App</span></g></svg>';
+
 const diagramInput = {
   title: "OAuth2 Authorisation Code Flow",
-  nodes: [
-    { id: "client", label: "Client App", type: "actor" as const },
-    { id: "auth", label: "Auth Server", type: "process" as const },
-    { id: "resource", label: "Resource Server", type: "data" as const },
-  ],
-  edges: [
-    { from: "client", to: "auth", animated: true },
-    { from: "auth", to: "resource" },
-  ],
+  mermaid:
+    "graph TD\n  ClientApp[Client App] --> AuthServer[Auth Server]\n  AuthServer --> ClientApp",
   explanation: "OAuth2 enables secure delegated access to resources.",
+  nodeDescriptions: {
+    AuthServer: "Issues tokens to requesting clients",
+    ClientApp: "The application requesting access",
+  },
   stepInfo: { current: 1, total: 3 },
 };
 
@@ -41,12 +50,13 @@ function stubOpenAI(overrides: Record<string, unknown> = {}) {
   return { sendFollowUpMessage };
 }
 
-beforeEach(() => {
-  vi.stubGlobal("requestAnimationFrame", (cb: FrameRequestCallback) => {
-    cb(0);
-    return 0;
+beforeEach(async () => {
+  // Restore mock implementation after each vi.resetAllMocks()
+  const mermaid = await import("mermaid");
+  vi.mocked(mermaid.default.render).mockResolvedValue({
+    svg: MOCK_SVG,
+    bindFunctions: undefined,
   });
-  vi.stubGlobal("cancelAnimationFrame", (_id: number) => {});
 });
 
 afterEach(() => {
@@ -62,76 +72,66 @@ describe("IlluminateDiagram", () => {
     expect(container.querySelector(".ill-spinner")).toBeInTheDocument();
   });
 
-  it("renders title, explanation and hint text", () => {
+  it("renders title and step badge", async () => {
     stubOpenAI();
-    render(<IlluminateDiagram />);
+    await act(async () => {
+      render(<IlluminateDiagram />);
+    });
     expect(screen.getByText(diagramInput.title)).toBeInTheDocument();
-    expect(screen.getByText(diagramInput.explanation)).toBeInTheDocument();
-    expect(
-      screen.getByText("Click any node to explore it further"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Step 1/3")).toBeInTheDocument();
   });
 
-  it("renders step badge when stepInfo is provided", () => {
-    stubOpenAI();
-    render(<IlluminateDiagram />);
-    expect(
-      screen.getByText(
-        `Step ${diagramInput.stepInfo.current}/${diagramInput.stepInfo.total}`,
-      ),
-    ).toBeInTheDocument();
-  });
-
-  it("omits step badge when stepInfo is absent", () => {
+  it("omits step badge when stepInfo is absent", async () => {
     const { stepInfo: _, ...withoutStep } = diagramInput;
     stubOpenAI({ toolInput: withoutStep });
-    render(<IlluminateDiagram />);
+    await act(async () => {
+      render(<IlluminateDiagram />);
+    });
     expect(screen.queryByText(/^Step \d+\/\d+$/)).not.toBeInTheDocument();
   });
 
-  it("renders the correct number of node groups", () => {
+  it("renders explanation text", async () => {
     stubOpenAI();
-    const { container } = render(<IlluminateDiagram />);
-    expect(container.querySelectorAll(".ill-node-group")).toHaveLength(
-      diagramInput.nodes.length,
+    await act(async () => {
+      render(<IlluminateDiagram />);
+    });
+    expect(screen.getByText(diagramInput.explanation)).toBeInTheDocument();
+  });
+
+  it("calls mermaid.initialize and mermaid.render on mount", async () => {
+    const mermaid = await import("mermaid");
+    stubOpenAI();
+    await act(async () => {
+      render(<IlluminateDiagram />);
+    });
+    expect(mermaid.default.initialize).toHaveBeenCalledWith(
+      expect.objectContaining({ securityLevel: "loose" }),
+    );
+    expect(mermaid.default.render).toHaveBeenCalledWith(
+      expect.stringContaining("mermaid-"),
+      diagramInput.mermaid,
     );
   });
 
-  it("renders all node labels", () => {
-    stubOpenAI();
-    render(<IlluminateDiagram />);
-    for (const node of diagramInput.nodes) {
-      expect(screen.getByText(node.label)).toBeInTheDocument();
-    }
+  it("calls mermaid.initialize with dark theme when theme is dark", async () => {
+    const mermaid = await import("mermaid");
+    stubOpenAI({ theme: "dark" });
+    await act(async () => {
+      render(<IlluminateDiagram />);
+    });
+    expect(mermaid.default.initialize).toHaveBeenCalledWith(
+      expect.objectContaining({ theme: "dark" }),
+    );
   });
 
-  it("node rects use the correct fill CSS variable for each type", () => {
-    stubOpenAI();
-    const { container } = render(<IlluminateDiagram />);
-    const rects = container.querySelectorAll(".ill-node-rect");
-    expect(rects[0].getAttribute("fill")).toBe("var(--node-actor)");
-    expect(rects[1].getAttribute("fill")).toBe("var(--node-process)");
-    expect(rects[2].getAttribute("fill")).toBe("var(--node-data)");
-  });
-
-  it("animated edges have the ill-edge-animated class", () => {
-    stubOpenAI();
-    const { container } = render(<IlluminateDiagram />);
-    expect(
-      container.querySelectorAll(".ill-edge-animated").length,
-    ).toBeGreaterThan(0);
-  });
-
-  it("clicking a node calls sendFollowUpMessage with drill-down prompt", () => {
+  it("clicking a rendered node calls sendFollowUpMessage", async () => {
     const { sendFollowUpMessage } = stubOpenAI();
-    const { container } = render(<IlluminateDiagram />);
-    const nodeGroups = container.querySelectorAll(".ill-node-group");
-    fireEvent.click(nodeGroups[0]!);
-    expect(sendFollowUpMessage).toHaveBeenCalledWith(
-      expect.objectContaining({
-        prompt: expect.stringContaining("Client App"),
-      }),
-    );
+    let container!: HTMLElement;
+    await act(async () => {
+      ({ container } = render(<IlluminateDiagram />));
+    });
+    const node = container.querySelector(".node") as HTMLElement;
+    fireEvent.click(node);
     expect(sendFollowUpMessage).toHaveBeenCalledWith(
       expect.objectContaining({
         prompt: expect.stringContaining(diagramInput.title),
@@ -139,12 +139,13 @@ describe("IlluminateDiagram", () => {
     );
   });
 
-  it("selected node rect gets a white stroke", () => {
+  it("renders hint text", async () => {
     stubOpenAI();
-    const { container } = render(<IlluminateDiagram />);
-    const nodeGroups = container.querySelectorAll(".ill-node-group");
-    fireEvent.click(nodeGroups[0]!);
-    const rects = container.querySelectorAll(".ill-node-rect");
-    expect(rects[0].getAttribute("stroke")).toBe("#fff");
+    await act(async () => {
+      render(<IlluminateDiagram />);
+    });
+    expect(
+      screen.getByText("Click any node to explore it further"),
+    ).toBeInTheDocument();
   });
 });

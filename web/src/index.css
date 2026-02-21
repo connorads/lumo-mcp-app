@@ -140,75 +140,15 @@ body {
   white-space: nowrap;
 }
 
-.ill-svg-container {
+.ill-mermaid-container {
   width: 100%;
-  overflow: visible;
+  overflow: auto;
 }
 
-.ill-svg {
-  width: 100%;
+.ill-mermaid-container svg {
+  max-width: 100%;
   height: auto;
   display: block;
-  overflow: visible;
-}
-
-/* SVG node groups */
-.ill-node-group {
-  cursor: pointer;
-  transition: opacity 0.4s ease, filter 0.15s ease;
-  opacity: 0;
-}
-
-.ill-node-group.ill-visible {
-  opacity: 1;
-}
-
-.ill-node-group:hover .ill-node-rect {
-  filter: brightness(1.15);
-}
-
-.ill-node-rect {
-  transition: filter 0.15s ease;
-}
-
-.ill-node-label {
-  fill: #ffffff;
-  font-size: 11px;
-  font-weight: 600;
-  pointer-events: none;
-  font-family: system-ui, -apple-system, sans-serif;
-}
-
-/* SVG edges */
-.ill-edge {
-  fill: none;
-  stroke: var(--edge);
-  stroke-width: 1.5;
-  transition: stroke-dashoffset 0.6s ease;
-}
-
-.ill-edge-animated {
-  stroke-dasharray: 8 4;
-  animation: ill-flow 1.5s linear infinite;
-}
-
-@keyframes ill-flow {
-  to {
-    stroke-dashoffset: -36;
-  }
-}
-
-.ill-arrowhead {
-  fill: var(--arrowhead);
-}
-
-.ill-edge-label {
-  fill: var(--edge-label);
-  font-size: 10px;
-  text-anchor: middle;
-  dominant-baseline: auto;
-  font-family: system-ui, -apple-system, sans-serif;
-  pointer-events: none;
 }
 
 .ill-explanation {
