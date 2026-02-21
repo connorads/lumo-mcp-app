@@ -56,6 +56,7 @@ beforeEach(async () => {
   vi.mocked(mermaid.default.render).mockResolvedValue({
     svg: MOCK_SVG,
     bindFunctions: undefined,
+    diagramType: "flowchart",
   });
 });
 
