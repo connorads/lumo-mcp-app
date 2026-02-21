@@ -182,6 +182,64 @@ body {
 }
 
 /* ============================================================
+   Fill-in-the-blank widget
+   ============================================================ */
+.ill-fill-root {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.ill-fill-prompt {
+  font-size: 15px;
+  color: var(--text);
+  line-height: 2;
+}
+
+.ill-fill-blank-wrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  vertical-align: bottom;
+  margin: 0 2px;
+}
+
+.ill-fill-input {
+  display: inline-block;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--accent);
+  outline: none;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--text);
+  padding: 0 2px;
+  min-width: 4ch;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.ill-fill-input.ill-correct {
+  border-bottom-color: var(--correct);
+  color: var(--correct);
+}
+
+.ill-fill-input.ill-wrong {
+  border-bottom-color: var(--wrong);
+  color: var(--wrong);
+}
+
+.ill-fill-hint {
+  font-size: 11px;
+  font-style: italic;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ============================================================
    Quiz widget
    ============================================================ */
 .ill-quiz-root {
