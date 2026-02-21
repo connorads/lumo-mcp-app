@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "skybridge dev",
+    "dev:tunnel": "concurrently --kill-others \"skybridge dev\" \"cloudflared tunnel --url http://localhost:3000\"",
     "build": "skybridge build",
     "start": "skybridge start",
     "deploy": "alpic deploy",
@@ -28,6 +29,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.4",
     "alpic": "^1.90.0",
+    "concurrently": "^9.2.1",
     "jsdom": "^28.1.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
