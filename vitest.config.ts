@@ -1,8 +1,7 @@
-import path from "node:path";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
 
-const webSrc = path.resolve(__dirname, "web/src");
+const webSrc = import.meta.dirname + "/web/src";
 
 export default defineConfig({
   test: {

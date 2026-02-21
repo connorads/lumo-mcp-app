@@ -38,7 +38,7 @@ function stubOpenAI(overrides: Record<string, unknown> = {}) {
     safeArea: { insets: { top: 0, bottom: 0, left: 0, right: 0 } },
     ...overrides,
   });
-  return { sendFollowUpMessage, setWidgetState };
+  return { sendFollowUpMessage };
 }
 
 beforeEach(() => {
@@ -47,13 +47,11 @@ beforeEach(() => {
     return 0;
   });
   vi.stubGlobal("cancelAnimationFrame", (_id: number) => {});
-  vi.useFakeTimers();
 });
 
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
-  vi.useRealTimers();
   vi.resetAllMocks();
 });
 

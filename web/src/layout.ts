@@ -51,7 +51,8 @@ export function hierarchicalLayout(
 
   let processed = 0;
   while (queue.length > 0) {
-    const id = queue.shift()!;
+    const id = queue.shift();
+    if (id === undefined) continue;
     processed++;
     for (const next of adj.get(id) ?? []) {
       const nextDeg = (inDeg.get(next) ?? 1) - 1;
@@ -65,8 +66,12 @@ export function hierarchicalLayout(
 
   const byLevel = new Map<number, string[]>();
   for (const [id, lv] of level) {
-    if (!byLevel.has(lv)) byLevel.set(lv, []);
-    byLevel.get(lv)!.push(id);
+    const group = byLevel.get(lv);
+    if (group) {
+      group.push(id);
+    } else {
+      byLevel.set(lv, [id]);
+    }
   }
 
   const maxCount = Math.max(...Array.from(byLevel.values()).map((g) => g.length));

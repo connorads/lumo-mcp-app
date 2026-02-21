@@ -21,6 +21,21 @@ describe("diagramInputSchema", () => {
     expect(diagramInputSchema.safeParse(rest).success).toBe(false);
   });
 
+  it("rejects missing nodes", () => {
+    const { nodes: _, ...rest } = validDiagram;
+    expect(diagramInputSchema.safeParse(rest).success).toBe(false);
+  });
+
+  it("rejects missing edges", () => {
+    const { edges: _, ...rest } = validDiagram;
+    expect(diagramInputSchema.safeParse(rest).success).toBe(false);
+  });
+
+  it("rejects missing explanation", () => {
+    const { explanation: _, ...rest } = validDiagram;
+    expect(diagramInputSchema.safeParse(rest).success).toBe(false);
+  });
+
   it("rejects invalid node type enum", () => {
     expect(
       diagramInputSchema.safeParse({
@@ -124,6 +139,16 @@ describe("quizInputSchema", () => {
 
   it("rejects missing correctId", () => {
     const { correctId: _, ...rest } = validQuiz;
+    expect(quizInputSchema.safeParse(rest).success).toBe(false);
+  });
+
+  it("rejects missing explanation", () => {
+    const { explanation: _, ...rest } = validQuiz;
+    expect(quizInputSchema.safeParse(rest).success).toBe(false);
+  });
+
+  it("rejects missing topic", () => {
+    const { topic: _, ...rest } = validQuiz;
     expect(quizInputSchema.safeParse(rest).success).toBe(false);
   });
 });

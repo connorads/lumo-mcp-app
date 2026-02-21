@@ -33,7 +33,8 @@ function stubOpenAI(overrides: Record<string, unknown> = {}) {
     safeArea: { insets: { top: 0, bottom: 0, left: 0, right: 0 } },
     ...overrides,
   });
-  return { sendFollowUpMessage, setWidgetState };
+  // sendFollowUpMessage receives { prompt: "..." } — Skybridge wraps the string in an object
+  return { sendFollowUpMessage };
 }
 
 beforeEach(() => {
@@ -78,8 +79,8 @@ describe("IlluminateQuiz", () => {
   it("clicking the correct answer disables all buttons", () => {
     stubOpenAI();
     render(<IlluminateQuiz />);
-    const buttons = screen.getAllByRole("button");
-    fireEvent.click(buttons[0]);
+    const correctBtn = screen.getByRole("button", { name: /Open Authorisation/ });
+    fireEvent.click(correctBtn);
     for (const btn of screen.getAllByRole("button")) {
       expect(btn).toBeDisabled();
     }
@@ -99,8 +100,8 @@ describe("IlluminateQuiz", () => {
   it("sendFollowUpMessage called after 1.5 s on correct answer", () => {
     const { sendFollowUpMessage } = stubOpenAI();
     render(<IlluminateQuiz />);
-    const buttons = screen.getAllByRole("button");
-    fireEvent.click(buttons[0]); // correct
+    const correctBtn = screen.getByRole("button", { name: /Open Authorisation/ });
+    fireEvent.click(correctBtn); // correct
     vi.advanceTimersByTime(1500);
     expect(sendFollowUpMessage).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -139,5 +140,15 @@ describe("IlluminateQuiz", () => {
     stubOpenAI({ toolOutput: null, toolResponseMetadata: null });
     const { container } = render(<IlluminateQuiz />);
     expect(container.querySelector(".ill-spinner")).toBeInTheDocument();
+  });
+
+  it("does not send follow-up message twice", () => {
+    const { sendFollowUpMessage } = stubOpenAI();
+    render(<IlluminateQuiz />);
+    const correctBtn = screen.getByRole("button", { name: /Open Authorisation/ });
+    fireEvent.click(correctBtn);
+    vi.advanceTimersByTime(1500);
+    vi.advanceTimersByTime(1500);
+    expect(sendFollowUpMessage).toHaveBeenCalledTimes(1);
   });
 });

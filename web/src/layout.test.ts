@@ -127,14 +127,12 @@ describe("computeLayout", () => {
 
   it("uses radial when hinted", () => {
     const nodes = [node("a"), node("b"), node("c")];
-    const posH = computeLayout(nodes, [edge("a", "b")]);
-    const posR = computeLayout(nodes, [edge("a", "b")], "radial");
-    // Radial and hierarchical give different positions for 'c' (no edges to c)
-    expect(posH.get("c")).toBeDefined();
-    expect(posR.get("c")).toBeDefined();
-    const hC = posH.get("c")!;
-    const rC = posR.get("c")!;
-    expect(hC.x !== rC.x || hC.y !== rC.y).toBe(true);
+    const edges = [edge("a", "b")];
+    const pos = computeLayout(nodes, edges, "radial");
+    const expected = radialLayout(nodes);
+    for (const n of nodes) {
+      expect(pos.get(n.id)).toEqual(expected.get(n.id));
+    }
   });
 
   it("falls back to radial for a cyclic graph", () => {
