@@ -87,7 +87,7 @@ https://github.com/modelcontextprotocol/ext-apps/blob/main/specification/2026-01
 
 - Start locally: `bun dev`
 - Run tests: `bun run test`
-- Type check: `npx tsc --noEmit` (run alongside tests — devtools may surface TS errors tests don't catch)
+- Type check: `bunx tsc --noEmit` (run alongside tests — devtools may surface TS errors tests don't catch)
 - Build: `bun build`
 - Verify all widgets in devtools:
   - **Diagram:** Mermaid flowchart renders with proper layout; node click sends follow-up; light/dark theme re-renders correctly
