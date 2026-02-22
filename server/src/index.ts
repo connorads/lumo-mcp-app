@@ -21,7 +21,7 @@ const server = new McpServer(
     },
     {
       description:
-        "Display an interactive diagram using Mermaid syntax. Supports flowchart (graph TD/LR), sequenceDiagram, stateDiagram-v2, classDiagram. Provide nodeDescriptions for clickable drill-down nodes. After showing a diagram, check understanding with lumo-quiz (recognition) or lumo-recall (recall). Keep diagrams simple: max 8 nodes, 2-5 word labels. This is your primary 'worked example' tool. Walk through the diagram in the explanation. After showing a diagram, check understanding with quiz (recognition) or recall (recall). If a previous diagram didn't land, try a different diagram type (sequence instead of flowchart) — varying modality activates different mental models.",
+        "Display an interactive diagram using Mermaid syntax. Supports flowchart (graph TD/LR), sequenceDiagram, stateDiagram-v2, classDiagram. Provide nodeDescriptions for clickable drill-down nodes. After showing a diagram, check understanding with lumo-quiz (recognition) or lumo-recall (recall). Keep diagrams simple: max 8 nodes, 2-5 word labels. This is your primary 'worked example' tool. Walk through the diagram in the explanation. After showing a diagram, check understanding with quiz (recognition) or recall (recall). If a previous diagram didn't land, try a different diagram type (sequence instead of flowchart) — varying modality activates different mental models. IMPORTANT: In your text response, always tell the user they can click any node in the diagram to explore it deeper — users often don't realise the diagram is interactive.",
       inputSchema: diagramInputSchema.shape,
     },
     async (input) => ({
@@ -43,7 +43,7 @@ const server = new McpServer(
     },
     {
       description:
-        "Display an interactive, zoomable mind map. Write Markdown with headings (# to ####) where each heading becomes a node. Users can pan, zoom, and click branches to explore deeper. Prefer this over diagrams when showing a concept hierarchy or topic overview without directional flow. Keep maps focused: 3-5 top-level branches, 2-4 items each, 2-5 word labels — no sentences.",
+        "Display an interactive, zoomable mind map. Write Markdown with headings (# to ####) where each heading becomes a node. Users can pan, zoom, and click branches to explore deeper. Prefer this over diagrams when showing a concept hierarchy or topic overview without directional flow. Keep maps focused: 3-5 top-level branches, 2-4 items each, 2-5 word labels — no sentences. IMPORTANT: In your text response, always tell the user they can click any branch in the mind map to drill into that topic — users often don't realise the map is interactive.",
       inputSchema: mindmapInputSchema.shape,
     },
     async (input) => ({
@@ -65,7 +65,7 @@ const server = new McpServer(
     },
     {
       description:
-        "Display a quiz card with 2-4 options. The user's answer triggers an adaptive follow-up. Use for initial comprehension checks. For deeper understanding, prefer lumo-recall.",
+        "Display a quiz card with 2-4 options. The user's answer triggers an adaptive follow-up. Use for initial comprehension checks. For deeper understanding, prefer lumo-recall. In your text response, encourage the user to pick an answer.",
       inputSchema: quizInputSchema.shape,
     },
     async (input) => ({
@@ -87,7 +87,7 @@ const server = new McpServer(
     },
     {
       description:
-        "Display a fill-in-the-blank exercise. Mark blanks as {{BLANK_ID}} in the prompt. The user types answers from memory. Use when testing deeper understanding — the learner must produce the answer, not just recognise it.",
+        "Display a fill-in-the-blank exercise. Mark blanks as {{BLANK_ID}} in the prompt. The user types answers from memory. Use when testing deeper understanding — the learner must produce the answer, not just recognise it. In your text response, tell the user to type answers and press Enter to check. Mention they can reveal answers if stuck after a couple of attempts.",
       inputSchema: fillBlankInputSchema.shape,
     },
     async (input) => ({
