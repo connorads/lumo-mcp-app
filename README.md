@@ -53,6 +53,6 @@ bun run test   # run tests
 
 ## Credits
 
-Built at **Claude Code London Hack Night 03** (20 Feb 2026) using [Claude Code](https://docs.anthropic.com/en/docs/claude-code).
+Built for **[Claude Code London Hack Night 03](https://super-mcp-world.netlify.app/)** (20 Feb 2026) using [Claude Code](https://docs.anthropic.com/en/docs/claude-code).
 
 Powered by the [Skybridge framework](https://github.com/alpic-ai/skybridge) and the [MCP Apps specification](https://github.com/modelcontextprotocol/ext-apps).
