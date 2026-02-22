@@ -83,7 +83,7 @@ export const fillBlankInputSchema = z.object({
   prompt: z
     .string()
     .describe(
-      "Sentence with {{BLANK_ID}} placeholders. Example: 'In OAuth2, the {{role}} issues access tokens to {{recipient}}.'",
+      "Sentence with {{BLANK_ID}} placeholders. The surrounding text MUST make each blank's answer inferrable — if multiple unrelated words could fit, add more context to constrain it. Bad: 'I want you to {{verb}}' (any verb fits). Good: 'The process of converting plaintext to ciphertext is called {{term}}' (only one concept fits). Example: 'In OAuth2, the {{role}} issues access tokens to {{recipient}}.'",
     ),
   blanks: z
     .array(
@@ -98,7 +98,7 @@ export const fillBlankInputSchema = z.object({
           .array(z.string())
           .optional()
           .describe(
-            "Be VERY generous — include every reasonable phrasing a learner might type. For 'local constituency representative': ['representative', 'rep', 'local rep', 'constituency rep', 'local representative', 'constituency representative', 'local member']. For 'two': ['2']. For 'regional top-up': ['top-up', 'top up', 'topup', 'regional']. Include abbreviations, partial forms, informal variants, and numeric equivalents. Aim for 3-8 alternatives per blank.",
+            "Every alternative must be genuinely correct — never include a grammatically wrong or factually incorrect form (e.g. do not list 'parlez' as an alternative for a 'tu' conjugation). Be VERY generous — include every reasonable phrasing a learner might type. For 'local constituency representative': ['representative', 'rep', 'local rep', 'constituency rep', 'local representative', 'constituency representative', 'local member']. For 'two': ['2']. For 'regional top-up': ['top-up', 'top up', 'topup', 'regional']. Include abbreviations, partial forms, informal variants, and numeric equivalents. Aim for 3-8 alternatives per blank.",
           ),
         hint: z
           .string()
