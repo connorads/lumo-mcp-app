@@ -87,7 +87,7 @@ const server = new McpServer(
     },
     {
       description:
-        "Display a fill-in-the-blank exercise. Mark blanks as {{BLANK_ID}} in the prompt. The user types answers from memory. Use when testing deeper understanding — the learner must produce the answer, not just recognise it. In your text response, tell the user to type answers and press Enter to check. Mention they can reveal answers if stuck after a couple of attempts.",
+        "Display a fill-in-the-blank exercise. Mark blanks as {{BLANK_ID}} in the prompt. The user types answers from memory. Use when testing deeper understanding — the learner must produce the answer, not just recognise it. Keep blank answers to 1-2 words where possible — shorter is fairer for recall. Always provide alternativeAnswers with 3-8 variants (abbreviations, short forms, synonyms, numeric equivalents) so learners aren't penalised for reasonable phrasings. In your text response, tell the user to type answers and press Enter to check. Mention they can reveal answers if stuck after a couple of attempts.",
       inputSchema: fillBlankInputSchema.shape,
     },
     async (input) => ({

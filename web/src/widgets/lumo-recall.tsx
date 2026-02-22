@@ -43,7 +43,29 @@ function parsePrompt(prompt: string): Segment[] {
 /* ── Normalise answer for comparison ─────────────────────── */
 
 function normalise(s: string): string {
-  return s.trim().toLowerCase().replace(/\s+/g, " ");
+  return s
+    .trim()
+    .toLowerCase()
+    .replace(/[''`.,!?;:"""\-()]/g, "")
+    .replace(/\s+/g, " ")
+    .replace(/^(the|a|an) /, "");
+}
+
+/* ── Levenshtein distance for typo tolerance ─────────────── */
+
+function levenshtein(a: string, b: string): number {
+  const m = a.length,
+    n = b.length;
+  const dp: number[][] = Array.from({ length: m + 1 }, (_, i) =>
+    Array.from({ length: n + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0)),
+  );
+  for (let i = 1; i <= m; i++)
+    for (let j = 1; j <= n; j++)
+      dp[i][j] =
+        a[i - 1] === b[j - 1]
+          ? dp[i - 1][j - 1]
+          : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+  return dp[m][n];
 }
 
 /* ── Component ───────────────────────────────────────────── */
@@ -81,7 +103,14 @@ function LumoRecall() {
     if (!blank) return;
     // Skip if already revealed
     if (answers[id]?.revealed) return;
-    const correct = normalise(value) === normalise(blank.answer);
+    const acceptable = [blank.answer, ...(blank.alternativeAnswers ?? [])];
+    const inputNorm = normalise(value);
+    const correct = acceptable.some((a) => {
+      const target = normalise(a);
+      if (inputNorm === target) return true;
+      const threshold = target.length <= 4 ? 1 : 2;
+      return levenshtein(inputNorm, target) <= threshold;
+    });
     if (!correct) {
       setAttempts((prev) => ({ ...prev, [id]: (prev[id] ?? 0) + 1 }));
     }

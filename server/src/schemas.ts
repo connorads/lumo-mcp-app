@@ -89,7 +89,17 @@ export const fillBlankInputSchema = z.object({
     .array(
       z.object({
         id: z.string().describe("Matches {{ID}} placeholder in prompt"),
-        answer: z.string().describe("Correct answer text"),
+        answer: z
+          .string()
+          .describe(
+            "Canonical correct answer — keep to 1-2 words where possible (shown on reveal). Shorter answers are fairer for recall.",
+          ),
+        alternativeAnswers: z
+          .array(z.string())
+          .optional()
+          .describe(
+            "Be VERY generous — include every reasonable phrasing a learner might type. For 'local constituency representative': ['representative', 'rep', 'local rep', 'constituency rep', 'local representative', 'constituency representative', 'local member']. For 'two': ['2']. For 'regional top-up': ['top-up', 'top up', 'topup', 'regional']. Include abbreviations, partial forms, informal variants, and numeric equivalents. Aim for 3-8 alternatives per blank.",
+          ),
         hint: z
           .string()
           .optional()
