@@ -221,6 +221,30 @@ describe("fillBlankInputSchema", () => {
     ).toBe(true);
   });
 
+  it("allows alternativeAnswers on a blank", () => {
+    expect(
+      fillBlankInputSchema.safeParse({
+        ...validFillBlank,
+        blanks: [
+          {
+            id: "role",
+            answer: "authorisation server",
+            alternativeAnswers: ["auth server", "authorization server"],
+          },
+        ],
+      }).success,
+    ).toBe(true);
+  });
+
+  it("allows blanks without alternativeAnswers", () => {
+    expect(
+      fillBlankInputSchema.safeParse({
+        ...validFillBlank,
+        blanks: [{ id: "role", answer: "authorisation server" }],
+      }).success,
+    ).toBe(true);
+  });
+
   it("rejects missing explanation", () => {
     const { explanation: _, ...rest } = validFillBlank;
     expect(fillBlankInputSchema.safeParse(rest).success).toBe(false);

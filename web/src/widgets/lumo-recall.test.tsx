@@ -228,6 +228,89 @@ describe("LumoRecall", () => {
     expect(screen.getByText("Here are the answers:")).toBeInTheDocument();
   });
 
+  it("alternative answer is accepted as correct", () => {
+    const { setWidgetState } = stubOpenAI({
+      toolInput: {
+        ...fillBlankInput,
+        blanks: [
+          {
+            id: "role",
+            answer: "authorisation server",
+            alternativeAnswers: ["auth server", "authorization server"],
+            hint: "It validates credentials",
+          },
+          { id: "recipient", answer: "client" },
+        ],
+      },
+    });
+    render(<LumoRecall />);
+    const inputs = screen.getAllByRole("textbox");
+    fireEvent.change(inputs[0]!, { target: { value: "auth server" } });
+    fireEvent.keyDown(inputs[0]!, { key: "Enter" });
+    expect(setWidgetState).toHaveBeenCalledWith(
+      expect.objectContaining({
+        modelContent: expect.objectContaining({
+          answers: expect.objectContaining({
+            role: expect.objectContaining({ correct: true }),
+          }),
+        }),
+      }),
+    );
+  });
+
+  it("typo within Levenshtein threshold is accepted", () => {
+    const { setWidgetState } = stubOpenAI();
+    render(<LumoRecall />);
+    const inputs = screen.getAllByRole("textbox");
+    // "cliant" is 1 edit from "client"
+    fireEvent.change(inputs[1]!, { target: { value: "cliant" } });
+    fireEvent.keyDown(inputs[1]!, { key: "Enter" });
+    expect(setWidgetState).toHaveBeenCalledWith(
+      expect.objectContaining({
+        modelContent: expect.objectContaining({
+          answers: expect.objectContaining({
+            recipient: expect.objectContaining({ correct: true }),
+          }),
+        }),
+      }),
+    );
+  });
+
+  it("clearly wrong answer is still rejected", () => {
+    const { setWidgetState } = stubOpenAI();
+    render(<LumoRecall />);
+    const inputs = screen.getAllByRole("textbox");
+    fireEvent.change(inputs[1]!, { target: { value: "database" } });
+    fireEvent.keyDown(inputs[1]!, { key: "Enter" });
+    expect(setWidgetState).toHaveBeenCalledWith(
+      expect.objectContaining({
+        modelContent: expect.objectContaining({
+          answers: expect.objectContaining({
+            recipient: expect.objectContaining({ correct: false }),
+          }),
+        }),
+      }),
+    );
+  });
+
+  it("answer with leading article is accepted after normalisation", () => {
+    const { setWidgetState } = stubOpenAI();
+    render(<LumoRecall />);
+    const inputs = screen.getAllByRole("textbox");
+    // "the client" should normalise to "client"
+    fireEvent.change(inputs[1]!, { target: { value: "the client" } });
+    fireEvent.keyDown(inputs[1]!, { key: "Enter" });
+    expect(setWidgetState).toHaveBeenCalledWith(
+      expect.objectContaining({
+        modelContent: expect.objectContaining({
+          answers: expect.objectContaining({
+            recipient: expect.objectContaining({ correct: true }),
+          }),
+        }),
+      }),
+    );
+  });
+
   it("follow-up mentions revealed count when blanks were revealed", () => {
     const { sendFollowUpMessage } = stubOpenAI({
       widgetState: {
