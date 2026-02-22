@@ -51,7 +51,7 @@
 
 body {
   font-family: system-ui, -apple-system, sans-serif;
-  background: var(--bg);
+  background: transparent;
   color: var(--text);
   font-size: 14px;
   line-height: 1.5;
@@ -91,7 +91,6 @@ body {
   gap: 12px;
   padding: 16px;
   background: var(--surface);
-  border-radius: 12px;
   border: 1px solid var(--border);
 }
 
@@ -201,7 +200,6 @@ body {
   gap: 14px;
   padding: 16px;
   background: var(--surface);
-  border-radius: 12px;
   border: 1px solid var(--border);
 }
 
@@ -268,7 +266,6 @@ body {
   gap: 14px;
   padding: 16px;
   background: var(--surface);
-  border-radius: 12px;
   border: 1px solid var(--border);
 }
 
