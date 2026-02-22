@@ -46,9 +46,9 @@ TypeScript · React 19 · [Skybridge](https://docs.skybridge.tech/) · MCP proto
 ## Development
 
 ```bash
-bun install
-bun dev        # MCP server + devtools at localhost:3000
-bun run test   # run tests
+npm install
+npm run dev    # MCP server + devtools at localhost:3000
+npm test       # run tests
 ```
 
 ## Credits

@@ -85,10 +85,10 @@ https://github.com/modelcontextprotocol/ext-apps/blob/main/specification/2026-01
 
 ## Dev + Verification
 
-- Start locally: `bun dev`
-- Run tests: `bun run test`
-- Type check: `bunx tsc --noEmit` (run alongside tests — devtools may surface TS errors tests don't catch)
-- Build: `bun build`
+- Start locally: `npm run dev`
+- Run tests: `npm test`
+- Type check: `npx tsc --noEmit` (run alongside tests — devtools may surface TS errors tests don't catch)
+- Build: `npm run build`
 - Verify all widgets in devtools:
   - **Diagram:** Mermaid flowchart renders with proper layout; node click sends follow-up; light/dark theme re-renders correctly
   - **Mind map:** Markdown headings render as zoomable tree; pan/zoom works; branch click drills down
