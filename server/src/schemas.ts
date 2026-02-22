@@ -10,13 +10,13 @@ export const diagramInputSchema = z.object({
   explanation: z
     .string()
     .describe(
-      "1-3 sentence narrative explanation shown below the diagram",
+      "1-3 sentence narrative. Reference nodes by label for spatial contiguity — don't make the learner search. Walk through the key relationship step by step (worked example).",
     ),
   nodeDescriptions: z
     .record(z.string(), z.string())
     .optional()
     .describe(
-      "Node ID → description for drill-down tooltips and follow-up context. Keys must match node IDs in the Mermaid syntax.",
+      "IMPORTANT: Always provide for every node. Frame as questions for elaborative interrogation — e.g. 'Why must the auth server validate before issuing?' rather than just 'Validates credentials'. Keys must match node IDs in the Mermaid syntax.",
     ),
   stepInfo: z
     .object({
@@ -25,7 +25,7 @@ export const diagramInputSchema = z.object({
     })
     .optional()
     .describe(
-      "Optional step counter badge, e.g. { current: 2, total: 5 }",
+      "Use when a concept needs more than one diagram/mindmap. Plan the total upfront (2-5 steps). Each step should be self-contained. Omit for standalone visuals.",
     ),
 });
 
@@ -49,7 +49,7 @@ export const quizInputSchema = z.object({
   explanation: z
     .string()
     .describe(
-      "Explanation revealed after answering — clarify why the correct answer is right (1-2 sentences)",
+      "When the learner is wrong, address their specific misconception — explain why their choice was tempting but incorrect, not just why the right answer is right (error-driven learning). 1-2 sentences.",
     ),
   topic: z
     .string()
@@ -75,7 +75,7 @@ export const mindmapInputSchema = z.object({
     })
     .optional()
     .describe(
-      "Optional step counter badge, e.g. { current: 2, total: 5 }",
+      "Use when a concept needs more than one diagram/mindmap. Plan the total upfront (2-5 steps). Each step should be self-contained. Omit for standalone visuals.",
     ),
 });
 
@@ -93,7 +93,9 @@ export const fillBlankInputSchema = z.object({
         hint: z
           .string()
           .optional()
-          .describe("Optional clue shown after a wrong attempt"),
+          .describe(
+            "Guide reasoning, don't give the answer. E.g. 'What entity verifies identity before granting access?' not 'Think about authorisation'.",
+          ),
       }),
     )
     .min(1)

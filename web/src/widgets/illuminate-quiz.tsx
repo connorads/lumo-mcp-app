@@ -1,7 +1,7 @@
 import "@/index.css";
 
 import { mountWidget } from "skybridge/web";
-import { useEffect, useRef } from "react";
+import { useState } from "react";
 import {
   useToolInfo,
   useSendFollowUpMessage,
@@ -9,8 +9,6 @@ import {
   useLayout,
   DataLLM,
 } from "../helpers.js";
-
-/* ── Types ────────────────────────────────────────────────── */
 
 /* ── Component ───────────────────────────────────────────── */
 
@@ -21,34 +19,11 @@ function IlluminateQuiz() {
     answeredId: null,
   });
   const { theme } = useLayout();
-  const followUpSent = useRef(false);
+  const [followUpSent, setFollowUpSent] = useState(false);
 
   const input = toolState.isSuccess ? toolState.input : null;
   const answeredId = state.answeredId;
   const isAnswered = answeredId != null;
-
-  useEffect(() => {
-    if (!isAnswered || !input || followUpSent.current) return;
-
-    const isCorrect = answeredId === input.correctId;
-    const chosenText =
-      input.options.find((o) => o.id === answeredId)?.text ?? answeredId;
-
-    const t = setTimeout(() => {
-      followUpSent.current = true;
-      if (isCorrect) {
-        void sendFollowUp(
-          `I got the quiz about "${input.topic}" correct! Continue teaching me — show me the next concept.`,
-        );
-      } else {
-        void sendFollowUp(
-          `I got the quiz about "${input.topic}" wrong (chose '${chosenText}'). Can you explain this concept differently, maybe with a different diagram or analogy?`,
-        );
-      }
-    }, 1500);
-
-    return () => clearTimeout(t);
-  }, [isAnswered, answeredId, input, sendFollowUp]);
 
   if (!toolState.isSuccess || !input) {
     return (
@@ -59,6 +34,22 @@ function IlluminateQuiz() {
   }
 
   const { question, options, correctId, explanation, topic } = input;
+  const isCorrect = isAnswered && answeredId === correctId;
+
+  const sendContinue = () => {
+    if (followUpSent || !answeredId) return;
+    setFollowUpSent(true);
+    const chosenText = options.find((o) => o.id === answeredId)?.text ?? answeredId;
+    if (isCorrect) {
+      void sendFollowUp(
+        `I got the quiz about "${topic}" correct! Continue teaching me — show me the next concept.`,
+      );
+    } else {
+      void sendFollowUp(
+        `I got the quiz about "${topic}" wrong (chose '${chosenText}'). Can you explain this concept differently, maybe with a different diagram or analogy?`,
+      );
+    }
+  };
 
   const getOptionClass = (optionId: string): string => {
     if (!isAnswered) return "";
@@ -76,7 +67,6 @@ function IlluminateQuiz() {
     return optionId;
   };
 
-  const isCorrect = isAnswered && answeredId === correctId;
   const dataContent = isAnswered
     ? `Quiz on "${topic}": answered ${isCorrect ? "correctly" : "incorrectly"} (chose option ${answeredId})`
     : `Quiz on "${topic}": awaiting answer`;
@@ -107,7 +97,7 @@ function IlluminateQuiz() {
         </div>
 
         {isAnswered && (
-          <div className="ill-explanation-box">
+          <div className={["ill-explanation-box", isCorrect ? "ill-success" : "ill-retry"].join(" ")}>
             <div className="ill-explanation-label">
               {isCorrect ? "Correct!" : "Not quite —"}
             </div>
@@ -115,7 +105,13 @@ function IlluminateQuiz() {
           </div>
         )}
 
-        {isAnswered && (
+        {isAnswered && !followUpSent && (
+          <button className="ill-continue-btn" onClick={sendContinue}>
+            Continue →
+          </button>
+        )}
+
+        {isAnswered && followUpSent && (
           <p className="ill-sending">Continuing the lesson…</p>
         )}
       </div>

@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
-import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
+import { vi, describe, it, expect, afterEach } from "vitest";
 import IlluminateFillBlank from "./illuminate-fill-blank.js";
 
 vi.mock("skybridge/web", async (importOriginal) => {
@@ -38,14 +38,9 @@ function stubOpenAI(overrides: Record<string, unknown> = {}) {
   return { sendFollowUpMessage, setWidgetState };
 }
 
-beforeEach(() => {
-  vi.useFakeTimers();
-});
-
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
-  vi.useRealTimers();
   vi.resetAllMocks();
 });
 
@@ -113,7 +108,7 @@ describe("IlluminateFillBlank", () => {
     );
   });
 
-  it("sends follow-up after 1.5s when allCorrect is true", () => {
+  it("sends follow-up when Continue is clicked after allCorrect", () => {
     const { sendFollowUpMessage } = stubOpenAI({
       widgetState: {
         modelContent: {
@@ -126,7 +121,8 @@ describe("IlluminateFillBlank", () => {
       },
     });
     render(<IlluminateFillBlank />);
-    vi.advanceTimersByTime(1500);
+    const continueBtn = screen.getByRole("button", { name: /Continue/ });
+    fireEvent.click(continueBtn);
     expect(sendFollowUpMessage).toHaveBeenCalledWith(
       expect.objectContaining({
         prompt: expect.stringContaining(fillBlankInput.topic),
@@ -147,8 +143,11 @@ describe("IlluminateFillBlank", () => {
       },
     });
     render(<IlluminateFillBlank />);
-    vi.advanceTimersByTime(1500);
-    vi.advanceTimersByTime(1500);
+    const continueBtn = screen.getByRole("button", { name: /Continue/ });
+    fireEvent.click(continueBtn);
+    // Continue button replaced by sending text after first click
+    expect(screen.queryByRole("button", { name: /Continue/ })).not.toBeInTheDocument();
+    expect(screen.getByText(/Continuing the lesson/)).toBeInTheDocument();
     expect(sendFollowUpMessage).toHaveBeenCalledTimes(1);
   });
 

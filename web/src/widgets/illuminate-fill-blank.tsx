@@ -1,7 +1,7 @@
 import "@/index.css";
 
 import { mountWidget } from "skybridge/web";
-import { useEffect, useRef } from "react";
+import { useState } from "react";
 import {
   useToolInfo,
   useSendFollowUpMessage,
@@ -39,6 +39,12 @@ function parsePrompt(prompt: string): Segment[] {
   return segments;
 }
 
+/* ── Normalise answer for comparison ─────────────────────── */
+
+function normalise(s: string): string {
+  return s.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
 /* ── Component ───────────────────────────────────────────── */
 
 function IlluminateFillBlank() {
@@ -49,22 +55,9 @@ function IlluminateFillBlank() {
     allCorrect: false,
   });
   const { theme } = useLayout();
-  const followUpSent = useRef(false);
+  const [followUpSent, setFollowUpSent] = useState(false);
 
   const input = toolState.isSuccess ? toolState.input : null;
-
-  const allCorrectFromState = state.allCorrect ?? false;
-
-  useEffect(() => {
-    if (!allCorrectFromState || !input || followUpSent.current) return;
-    const t = setTimeout(() => {
-      followUpSent.current = true;
-      void sendFollowUp(
-        `I completed the fill-in-the-blank exercise about "${input.topic}" — continue teaching me.`,
-      );
-    }, 1500);
-    return () => clearTimeout(t);
-  }, [allCorrectFromState, input, sendFollowUp]);
 
   if (!toolState.isSuccess || !input) {
     return (
@@ -82,8 +75,7 @@ function IlluminateFillBlank() {
   const checkAnswer = (id: string, value: string) => {
     const blank = blanks.find((b) => b.id === id);
     if (!blank) return;
-    const correct =
-      value.trim().toLowerCase() === blank.answer.trim().toLowerCase();
+    const correct = normalise(value) === normalise(blank.answer);
     const nextAnswers = {
       ...answers,
       [id]: { value, correct },
@@ -93,14 +85,26 @@ function IlluminateFillBlank() {
     setState({ answers: nextAnswers, allCorrect: nextAllCorrect });
   };
 
+  const sendContinue = () => {
+    if (followUpSent) return;
+    setFollowUpSent(true);
+    void sendFollowUp(
+      `I completed the fill-in-the-blank exercise about "${topic}" — continue teaching me.`,
+    );
+  };
+
   const dataContent = allCorrect
     ? `Fill-blank on "${topic}": all blanks correct`
     : `Fill-blank on "${topic}": in progress`;
 
   return (
     <DataLLM content={dataContent}>
-      <div className="ill-fill-root" data-theme={theme}>
+      <div
+        className={["ill-fill-root", allCorrect ? "ill-celebrate" : ""].filter(Boolean).join(" ")}
+        data-theme={theme}
+      >
         <div className="ill-quiz-eyebrow">Fill in the blank</div>
+        <p className="ill-instruction">Press Enter to check each answer</p>
 
         <p className="ill-fill-prompt">
           {segments.map((seg, i) => {
@@ -123,9 +127,6 @@ function IlluminateFillBlank() {
                     .join(" ")}
                   type="text"
                   aria-label={`blank ${seg.id}`}
-                  style={{
-                    width: `${Math.max(6, (blankDef?.answer.length ?? 6) + 2)}ch`,
-                  }}
                   readOnly={isCorrect}
                   defaultValue={blankState?.value ?? ""}
                   onKeyDown={(e) => {
@@ -146,13 +147,19 @@ function IlluminateFillBlank() {
         </p>
 
         {allCorrect && (
-          <div className="ill-explanation-box" style={{ animationName: "ill-fade-in" }}>
+          <div className="ill-explanation-box ill-success">
             <div className="ill-explanation-label">All correct!</div>
             {explanation}
           </div>
         )}
 
-        {allCorrect && (
+        {allCorrect && !followUpSent && (
+          <button className="ill-continue-btn" onClick={sendContinue}>
+            Continue →
+          </button>
+        )}
+
+        {allCorrect && followUpSent && (
           <p className="ill-sending">Continuing the lesson…</p>
         )}
       </div>

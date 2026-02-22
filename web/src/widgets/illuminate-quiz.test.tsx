@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
-import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
+import { vi, describe, it, expect, afterEach } from "vitest";
 import IlluminateQuiz from "./illuminate-quiz.js";
 
 vi.mock("skybridge/web", async (importOriginal) => {
@@ -37,14 +37,9 @@ function stubOpenAI(overrides: Record<string, unknown> = {}) {
   return { sendFollowUpMessage };
 }
 
-beforeEach(() => {
-  vi.useFakeTimers();
-});
-
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
-  vi.useRealTimers();
   vi.resetAllMocks();
 });
 
@@ -76,13 +71,13 @@ describe("IlluminateQuiz", () => {
     expect(screen.getByText(explanation)).toBeInTheDocument();
   });
 
-  it("clicking the correct answer disables all buttons", () => {
+  it("clicking the correct answer disables all option buttons", () => {
     stubOpenAI();
     render(<IlluminateQuiz />);
     const correctBtn = screen.getByRole("button", { name: /Open Authorisation/ });
     fireEvent.click(correctBtn);
-    for (const btn of screen.getAllByRole("button")) {
-      expect(btn).toBeDisabled();
+    for (const opt of options) {
+      expect(screen.getByRole("button", { name: new RegExp(opt.text) })).toBeDisabled();
     }
   });
 
@@ -97,12 +92,13 @@ describe("IlluminateQuiz", () => {
     expect(screen.getByText("Not quite —")).toBeInTheDocument();
   });
 
-  it("sendFollowUpMessage called after 1.5 s on correct answer", () => {
+  it("sendFollowUpMessage called on Continue click after correct answer", () => {
     const { sendFollowUpMessage } = stubOpenAI();
     render(<IlluminateQuiz />);
     const correctBtn = screen.getByRole("button", { name: /Open Authorisation/ });
-    fireEvent.click(correctBtn); // correct
-    vi.advanceTimersByTime(1500);
+    fireEvent.click(correctBtn);
+    const continueBtn = screen.getByRole("button", { name: /Continue/ });
+    fireEvent.click(continueBtn);
     expect(sendFollowUpMessage).toHaveBeenCalledWith(
       expect.objectContaining({
         prompt: expect.stringContaining(topic),
@@ -115,7 +111,7 @@ describe("IlluminateQuiz", () => {
     );
   });
 
-  it("sendFollowUpMessage called after 1.5 s on wrong answer with chosen text", () => {
+  it("sendFollowUpMessage called on Continue click after wrong answer with chosen text", () => {
     const { sendFollowUpMessage } = stubOpenAI();
     render(<IlluminateQuiz />);
     const buttons = screen.getAllByRole("button");
@@ -123,7 +119,8 @@ describe("IlluminateQuiz", () => {
       b.textContent?.includes(options[1].text),
     )!;
     fireEvent.click(wrongBtn);
-    vi.advanceTimersByTime(1500);
+    const continueBtn = screen.getByRole("button", { name: /Continue/ });
+    fireEvent.click(continueBtn);
     expect(sendFollowUpMessage).toHaveBeenCalledWith(
       expect.objectContaining({
         prompt: expect.stringContaining("wrong"),
@@ -147,8 +144,11 @@ describe("IlluminateQuiz", () => {
     render(<IlluminateQuiz />);
     const correctBtn = screen.getByRole("button", { name: /Open Authorisation/ });
     fireEvent.click(correctBtn);
-    vi.advanceTimersByTime(1500);
-    vi.advanceTimersByTime(1500);
+    const continueBtn = screen.getByRole("button", { name: /Continue/ });
+    fireEvent.click(continueBtn);
+    // Continue button replaced by sending text after first click
+    expect(screen.queryByRole("button", { name: /Continue/ })).not.toBeInTheDocument();
+    expect(screen.getByText(/Continuing the lesson/)).toBeInTheDocument();
     expect(sendFollowUpMessage).toHaveBeenCalledTimes(1);
   });
 });

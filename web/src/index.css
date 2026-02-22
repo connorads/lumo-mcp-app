@@ -129,6 +129,22 @@ body {
   display: block;
 }
 
+/* Progress bar */
+.ill-progress-track {
+  width: 100%;
+  height: 4px;
+  background: var(--border);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.ill-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 9999px;
+  transition: width 0.6s ease;
+}
+
 /* ============================================================
    Mind map widget
    ============================================================ */
@@ -159,6 +175,23 @@ body {
   opacity: 0.7;
 }
 
+/* Click feedback for diagram/mindmap nodes */
+@keyframes ill-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.6); }
+  70% { box-shadow: 0 0 0 8px rgba(99, 102, 241, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+}
+
+.ill-node-clicked {
+  animation: ill-pulse 0.6s ease-out;
+}
+
+/* Mindmap node click highlight (SVG stroke) */
+.markmap-node.ill-node-clicked circle {
+  stroke: var(--accent) !important;
+  stroke-width: 3px !important;
+}
+
 /* ============================================================
    Fill-in-the-blank widget
    ============================================================ */
@@ -170,6 +203,10 @@ body {
   background: var(--surface);
   border-radius: 12px;
   border: 1px solid var(--border);
+}
+
+.ill-fill-root.ill-celebrate {
+  animation: ill-celebrate 0.5s ease;
 }
 
 .ill-fill-prompt {
@@ -196,7 +233,7 @@ body {
   font-family: inherit;
   color: var(--text);
   padding: 0 2px;
-  min-width: 4ch;
+  width: 10ch;
   transition: border-color 0.15s ease, color 0.15s ease;
 }
 
@@ -215,6 +252,11 @@ body {
   font-style: italic;
   color: var(--text-muted);
   margin-top: 2px;
+}
+
+.ill-instruction {
+  font-size: 12px;
+  color: var(--text-muted);
 }
 
 /* ============================================================
@@ -282,6 +324,7 @@ body {
   background: var(--correct-bg);
   border-color: var(--correct);
   color: var(--correct);
+  animation: ill-celebrate 0.5s ease;
 }
 
 .ill-option.ill-wrong {
@@ -314,6 +357,7 @@ body {
 .ill-option.ill-correct .ill-option-marker {
   background: var(--correct);
   color: white;
+  animation: ill-check-bounce 0.4s ease;
 }
 
 .ill-option.ill-wrong .ill-option-marker {
@@ -333,13 +377,26 @@ body {
   font-size: 13px;
   color: var(--text);
   line-height: 1.6;
+  border-left: 3px solid var(--accent);
   animation: ill-fade-in 0.4s ease;
+}
+
+.ill-explanation-box.ill-success {
+  border-left-color: var(--correct);
+}
+
+.ill-explanation-box.ill-retry {
+  border-left-color: var(--accent);
 }
 
 .ill-explanation-label {
   font-weight: 600;
   color: var(--accent);
   margin-bottom: 4px;
+}
+
+.ill-explanation-box.ill-success .ill-explanation-label {
+  color: var(--correct);
 }
 
 @keyframes ill-fade-in {
@@ -353,9 +410,59 @@ body {
   }
 }
 
+@keyframes ill-celebrate {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.05); }
+  70% { transform: scale(0.98); }
+  100% { transform: scale(1); }
+}
+
+@keyframes ill-check-bounce {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+.ill-continue-btn {
+  align-self: flex-start;
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: system-ui, -apple-system, sans-serif;
+  transition: filter 0.15s ease, transform 0.1s ease;
+  animation: ill-fade-in 0.3s ease;
+}
+
+.ill-continue-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
 .ill-sending {
   font-size: 12px;
   color: var(--text-muted);
   font-style: italic;
   animation: ill-fade-in 0.3s ease;
+}
+
+/* ============================================================
+   Reduced motion
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .ill-spinner,
+  .ill-explanation-box,
+  .ill-sending,
+  .ill-continue-btn,
+  .ill-option.ill-correct,
+  .ill-option.ill-correct .ill-option-marker,
+  .ill-node-clicked,
+  .ill-fill-root.ill-celebrate {
+    animation: none;
+    transition: none;
+  }
 }

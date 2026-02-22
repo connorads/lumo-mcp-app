@@ -23,6 +23,7 @@ function IlluminateDiagram() {
   const containerRef = useRef<HTMLDivElement>(null);
   const renderIdRef = useRef<string>(`mermaid-${crypto.randomUUID()}`);
   const [renderError, setRenderError] = useState<string | null>(null);
+  const [clickedLabel, setClickedLabel] = useState<string | null>(null);
 
   const input = toolState.isSuccess ? toolState.input : null;
 
@@ -80,14 +81,37 @@ function IlluminateDiagram() {
             el.querySelector(".nodeLabel")?.textContent?.trim() ??
             el.querySelector("span")?.textContent?.trim() ??
             nodeId;
+          const description = input.nodeDescriptions?.[nodeId];
+          const htmlEl = el as HTMLElement;
 
-          (el as HTMLElement).style.cursor = "pointer";
-          el.addEventListener("click", () => {
+          htmlEl.style.cursor = "pointer";
+          htmlEl.setAttribute("tabindex", "0");
+          htmlEl.setAttribute("role", "button");
+          htmlEl.setAttribute(
+            "aria-label",
+            description ? `${label}: ${description}` : `Explore ${label}`,
+          );
+          if (description) {
+            htmlEl.title = description;
+          }
+
+          const handleClick = () => {
             setState({ selectedNodeId: nodeId });
-            const description = input.nodeDescriptions?.[nodeId];
+            setClickedLabel(label);
+            htmlEl.classList.add("ill-node-clicked");
+            setTimeout(() => htmlEl.classList.remove("ill-node-clicked"), 700);
             void sendFollowUp(
               `Explain '${label}' in more detail with a new diagram. Context: '${label}' is a node in the "${input.title}" diagram.${description ? ` Description: ${description}` : ""}`,
             );
+          };
+
+          el.addEventListener("click", handleClick);
+          el.addEventListener("keydown", (e) => {
+            const ke = e as KeyboardEvent;
+            if (ke.key === "Enter" || ke.key === " ") {
+              e.preventDefault();
+              handleClick();
+            }
           });
         });
         setRenderError(null);
@@ -121,6 +145,15 @@ function IlluminateDiagram() {
           )}
         </div>
 
+        {stepInfo && (
+          <div className="ill-progress-track">
+            <div
+              className="ill-progress-fill"
+              style={{ width: `${(stepInfo.current / stepInfo.total) * 100}%` }}
+            />
+          </div>
+        )}
+
         <div className="ill-mermaid-container" ref={containerRef}>
           {renderError && (
             <p className="ill-hint">Failed to render diagram: {renderError}</p>
@@ -128,7 +161,9 @@ function IlluminateDiagram() {
         </div>
 
         {explanation && <p className="ill-explanation">{explanation}</p>}
-        <p className="ill-hint">Click any node to explore it further</p>
+        <p className="ill-hint">
+          {clickedLabel ? `Exploring ${clickedLabel}…` : "Click any node to explore it further"}
+        </p>
       </div>
     </DataLLM>
   );

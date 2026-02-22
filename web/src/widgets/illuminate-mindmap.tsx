@@ -1,7 +1,7 @@
 import "@/index.css";
 
 import { mountWidget } from "skybridge/web";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Transformer } from "markmap-lib";
 import { Markmap } from "markmap-view";
 import {
@@ -24,6 +24,7 @@ function IlluminateMindmap() {
   const svgRef = useRef<SVGSVGElement>(null);
   const markmapRef = useRef<Markmap | null>(null);
   const transformerRef = useRef<Transformer | null>(null);
+  const [clickedLabel, setClickedLabel] = useState<string | null>(null);
 
   const input = toolState.isSuccess ? toolState.input : null;
 
@@ -50,23 +51,42 @@ function IlluminateMindmap() {
       root,
     );
 
-    // Attach click handlers after render settles
-    const timer = setTimeout(() => {
-      if (!svgRef.current) return;
-      svgRef.current.querySelectorAll(".markmap-node").forEach((el) => {
+    const svgEl = svgRef.current;
+    const capturedInput = input;
+
+    const bindHandlers = (nodes: NodeListOf<Element>) => {
+      nodes.forEach((el) => {
         const textEl = el.querySelector("text, .markmap-foreign span");
         const label = textEl?.textContent?.trim() ?? "";
         (el as HTMLElement).style.cursor = "pointer";
         el.addEventListener("click", () => {
           setState({ selectedNode: label });
+          setClickedLabel(label);
+          el.classList.add("ill-node-clicked");
+          setTimeout(() => el.classList.remove("ill-node-clicked"), 700);
           void sendFollowUp(
-            `Explain '${label}' in more detail. Context: '${label}' is a topic in the "${input.title}" mind map.`,
+            `Explain '${label}' in more detail. Context: '${label}' is a topic in the "${capturedInput.title}" mind map.`,
           );
         });
       });
-    }, 200);
+    };
 
-    return () => clearTimeout(timer);
+    // Check if nodes are already rendered; otherwise watch for them
+    const existingNodes = svgEl.querySelectorAll(".markmap-node");
+    if (existingNodes.length > 0) {
+      bindHandlers(existingNodes);
+      return;
+    }
+
+    const observer = new MutationObserver(() => {
+      const nodes = svgEl.querySelectorAll(".markmap-node");
+      if (nodes.length === 0) return;
+      observer.disconnect();
+      bindHandlers(nodes);
+    });
+
+    observer.observe(svgEl, { childList: true, subtree: true });
+    return () => observer.disconnect();
   }, [input, theme]);
 
   if (!toolState.isSuccess || !input) {
@@ -93,6 +113,15 @@ function IlluminateMindmap() {
           )}
         </div>
 
+        {stepInfo && (
+          <div className="ill-progress-track">
+            <div
+              className="ill-progress-fill"
+              style={{ width: `${(stepInfo.current / stepInfo.total) * 100}%` }}
+            />
+          </div>
+        )}
+
         <div className={`ill-mindmap-container${theme === "dark" ? " markmap-dark" : ""}`}>
           <svg
             ref={svgRef}
@@ -101,7 +130,9 @@ function IlluminateMindmap() {
         </div>
 
         {explanation && <p className="ill-explanation">{explanation}</p>}
-        <p className="ill-hint">Click any branch to explore it further</p>
+        <p className="ill-hint">
+          {clickedLabel ? `Exploring ${clickedLabel}…` : "Click any branch to explore it further"}
+        </p>
       </div>
     </DataLLM>
   );
