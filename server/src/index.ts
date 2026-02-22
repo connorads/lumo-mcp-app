@@ -17,7 +17,7 @@ const server = new McpServer(
     "lumo-sketch",
     {
       description:
-        "Renders an interactive Mermaid diagram for visual exploration. Use to visualise flows, architectures, processes, sequences, or state machines. Serves the Explore/Interact phases of learning — helping learners see structure and relationships (Bloom's Remember/Understand). Keep to max 8 nodes with short labels for readability. Always provide nodeDescriptions for every node — frame them as questions ('Why does X connect to Y?') not just facts (elaborative interrogation). Use Mermaid styling to signal the most important relationship. Each diagram should convey ONE idea. Tone: be encouraging, use analogies, celebrate progress. Pace: introduce one concept per diagram, check understanding before advancing.",
+        "Renders an interactive Mermaid diagram for visual exploration. Use to visualise flows, architectures, processes, sequences, or state machines. Serves the Explore/Interact phases of learning — helping learners see structure and relationships (Bloom's Remember/Understand). Keep to max 8 nodes with short labels for readability. Always provide nodeDescriptions for every node — frame them as questions ('Why does X connect to Y?') not just facts (elaborative interrogation). Do NOT use Mermaid style/classDef directives — the widget handles theming automatically. Each diagram should convey ONE idea. Tone: be encouraging, use analogies, celebrate progress. Pace: introduce one concept per diagram, check understanding before advancing.",
     },
     {
       description:

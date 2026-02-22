@@ -65,7 +65,11 @@ function LumoSketch() {
     const renderId = `mermaid-${crypto.randomUUID()}`;
     renderIdRef.current = renderId;
 
-    const sanitised = input.mermaid.replace(/\\n/g, "<br/>");
+    const sanitised = input.mermaid
+      .replace(/\\n/g, "<br/>")
+      .replace(/^\s*style\s+\S+.*$/gm, "")
+      .replace(/^\s*classDef\s+.*$/gm, "")
+      .replace(/:::\s*\w+/g, "");
 
     mermaid
       .render(renderId, sanitised)
