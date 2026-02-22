@@ -17,11 +17,11 @@ const server = new McpServer(
     "illuminate-diagram",
     {
       description:
-        "Renders an interactive Mermaid diagram for visual exploration. Use to visualise flows, architectures, processes, sequences, or state machines. Serves the Explore/Interact phases of learning — helping learners see structure and relationships (Bloom's Remember/Understand).",
+        "Renders an interactive Mermaid diagram for visual exploration. Use to visualise flows, architectures, processes, sequences, or state machines. Serves the Explore/Interact phases of learning — helping learners see structure and relationships (Bloom's Remember/Understand). Keep to max 8 nodes with short labels for readability.",
     },
     {
       description:
-        "Display an interactive diagram using Mermaid syntax. Supports flowchart (graph TD/LR), sequenceDiagram, stateDiagram-v2, classDiagram. Provide nodeDescriptions for clickable drill-down nodes. After showing a diagram, check understanding with illuminate-quiz (recognition) or illuminate-fill-blank (recall).",
+        "Display an interactive diagram using Mermaid syntax. Supports flowchart (graph TD/LR), sequenceDiagram, stateDiagram-v2, classDiagram. Provide nodeDescriptions for clickable drill-down nodes. After showing a diagram, check understanding with illuminate-quiz (recognition) or illuminate-fill-blank (recall). Keep diagrams simple: max 8 nodes, 2-5 word labels.",
       inputSchema: diagramInputSchema.shape,
     },
     async (input) => ({
@@ -39,11 +39,11 @@ const server = new McpServer(
     "illuminate-mindmap",
     {
       description:
-        "Renders a zoomable mind map from Markdown headings. Use for concept overviews, brainstorming, and showing how ideas connect — when there is no clear linear flow. Serves the Explore phase (Bloom's Remember) — building a mental model of a topic landscape.",
+        "Renders a zoomable mind map from Markdown headings. Use for concept overviews, brainstorming, and showing how ideas connect — when there is no clear linear flow. Serves the Explore phase (Bloom's Remember) — building a mental model of a topic landscape. Keep maps concise (3-5 branches, short labels) so they are readable at default zoom.",
     },
     {
       description:
-        "Display an interactive, zoomable mind map. Write Markdown with headings (# to ####) where each heading becomes a node. Users can pan, zoom, and click branches to explore deeper. Prefer this over diagrams when showing a concept hierarchy or topic overview without directional flow.",
+        "Display an interactive, zoomable mind map. Write Markdown with headings (# to ####) where each heading becomes a node. Users can pan, zoom, and click branches to explore deeper. Prefer this over diagrams when showing a concept hierarchy or topic overview without directional flow. Keep maps focused: 3-5 top-level branches, 2-4 items each, 2-5 word labels — no sentences.",
       inputSchema: mindmapInputSchema.shape,
     },
     async (input) => ({

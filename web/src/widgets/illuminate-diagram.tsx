@@ -64,8 +64,10 @@ function IlluminateDiagram() {
     const renderId = `mermaid-${crypto.randomUUID()}`;
     renderIdRef.current = renderId;
 
+    const sanitised = input.mermaid.replace(/\\n/g, "<br/>");
+
     mermaid
-      .render(renderId, input.mermaid)
+      .render(renderId, sanitised)
       .then(({ svg, bindFunctions }) => {
         if (!containerRef.current) return;
         containerRef.current.innerHTML = svg;

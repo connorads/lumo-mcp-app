@@ -139,6 +139,18 @@ describe("IlluminateDiagram", () => {
     );
   });
 
+  it("sanitises literal \\n in mermaid input before rendering", async () => {
+    const mermaid = await import("mermaid");
+    stubOpenAI({ toolInput: { ...diagramInput, mermaid: "graph TD\n  A[Line1\\nLine2] --> B" } });
+    await act(async () => {
+      render(<IlluminateDiagram />);
+    });
+    expect(mermaid.default.render).toHaveBeenCalledWith(
+      expect.stringContaining("mermaid-"),
+      "graph TD\n  A[Line1<br/>Line2] --> B",
+    );
+  });
+
   it("clicking a rendered node calls sendFollowUpMessage", async () => {
     const { sendFollowUpMessage } = stubOpenAI();
     let container!: HTMLElement;

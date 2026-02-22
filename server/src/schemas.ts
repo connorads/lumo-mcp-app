@@ -5,7 +5,7 @@ export const diagramInputSchema = z.object({
   mermaid: z
     .string()
     .describe(
-      "Raw Mermaid syntax (flowchart, sequenceDiagram, stateDiagram-v2, classDiagram). Use meaningful node IDs that describe the concept (e.g. 'AuthServer', 'ClientApp'). Keep node labels concise (2-5 words).",
+      "Raw Mermaid syntax (flowchart, sequenceDiagram, stateDiagram-v2, classDiagram). IMPORTANT: Max 8 nodes per diagram. Node labels must be 2-5 words — never full sentences. Never use \\n in labels. Use meaningful node IDs (e.g. 'AuthServer', 'ClientApp'). If a concept needs more nodes, split across multiple diagrams using stepInfo.",
     ),
   explanation: z
     .string()
@@ -63,7 +63,7 @@ export const mindmapInputSchema = z.object({
   markdown: z
     .string()
     .describe(
-      "Markdown with # to #### headings where each heading becomes a node. Use **bold** for key terms, `code` for technical terms, *italics* for examples.",
+      "Markdown with # to #### headings. Each heading becomes a node. IMPORTANT: Max 3-5 top-level branches (## headings), each with 2-4 sub-items. Keep all labels to 2-5 words — no full sentences as headings. Use **bold** for key terms, `code` for technical terms, *italics* for examples. If a topic has more branches, split across multiple mind maps using stepInfo.",
     ),
   explanation: z
     .string()
