@@ -39,11 +39,11 @@ function LumoSketch() {
         ? {
             primaryColor: "#1e293b",
             primaryTextColor: "#f1f5f9",
-            primaryBorderColor: "#334155",
+            primaryBorderColor: "#64748b",
             lineColor: "#475569",
             background: "#1A1A2E",
             mainBkg: "#1e293b",
-            nodeBorder: "#334155",
+            nodeBorder: "#64748b",
             nodeTextColor: "#f1f5f9",
             edgeLabelBackground: "#1e293b",
           }

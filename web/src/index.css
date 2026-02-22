@@ -128,6 +128,20 @@ body {
   display: block;
 }
 
+.lumo-mermaid-container .node rect,
+.lumo-mermaid-container .node polygon,
+.lumo-mermaid-container .node circle,
+.lumo-mermaid-container .node ellipse {
+  stroke-width: 2px;
+}
+
+[data-theme="dark"] .lumo-mermaid-container .node rect,
+[data-theme="dark"] .lumo-mermaid-container .node polygon,
+[data-theme="dark"] .lumo-mermaid-container .node circle,
+[data-theme="dark"] .lumo-mermaid-container .node ellipse {
+  stroke: #64748b;
+}
+
 /* Progress bar */
 .lumo-progress-track {
   width: 100%;
