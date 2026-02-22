@@ -142,6 +142,17 @@ body {
   stroke: #64748b;
 }
 
+/* Entrance pulse — draws attention to clickable nodes on first render */
+.lumo-mermaid-container .node rect,
+.lumo-mermaid-container .node polygon {
+  animation: lumo-node-entrance 1.5s ease-out;
+}
+
+@keyframes lumo-node-entrance {
+  0% { filter: brightness(1.15); }
+  100% { filter: brightness(1); }
+}
+
 /* Progress bar */
 .lumo-progress-track {
   width: 100%;
@@ -182,10 +193,10 @@ body {
 }
 
 .lumo-hint {
-  font-size: 11px;
-  color: var(--text-muted);
+  font-size: 12px;
+  color: var(--accent);
   font-style: italic;
-  opacity: 0.7;
+  animation: lumo-fade-in 0.4s ease;
 }
 
 /* Click feedback for diagram/mindmap nodes */
@@ -203,6 +214,22 @@ body {
 .markmap-node.lumo-node-clicked circle {
   stroke: var(--accent) !important;
   stroke-width: 3px !important;
+}
+
+.lumo-mermaid-container .node:hover rect,
+.lumo-mermaid-container .node:hover polygon {
+  filter: brightness(0.95);
+  transition: filter 0.15s ease;
+}
+
+[data-theme="dark"] .lumo-mermaid-container .node:hover rect,
+[data-theme="dark"] .lumo-mermaid-container .node:hover polygon {
+  filter: brightness(1.2);
+}
+
+.markmap-node:hover circle {
+  stroke-width: 3px !important;
+  transition: stroke-width 0.15s ease;
 }
 
 /* ============================================================
@@ -259,11 +286,17 @@ body {
   color: var(--wrong);
 }
 
+.lumo-fill-input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 .lumo-fill-hint {
-  font-size: 11px;
+  font-size: 12px;
   font-style: italic;
-  color: var(--text-muted);
-  margin-top: 2px;
+  color: var(--accent);
+  margin-top: 4px;
 }
 
 .lumo-instruction {

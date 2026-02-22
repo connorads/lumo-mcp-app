@@ -56,10 +56,15 @@ function LumoMap() {
 
     const bindHandlers = (nodes: NodeListOf<Element>) => {
       nodes.forEach((el) => {
-        const textEl = el.querySelector("text, .markmap-foreign span");
-        const label = textEl?.textContent?.trim() ?? "";
-        (el as HTMLElement).style.cursor = "pointer";
-        el.addEventListener("click", () => {
+        const foreignObj = el.querySelector("foreignObject");
+        const label = foreignObj?.textContent?.trim() ?? "";
+        const htmlEl = el as HTMLElement;
+        htmlEl.style.cursor = "pointer";
+        htmlEl.setAttribute("tabindex", "0");
+        htmlEl.setAttribute("role", "button");
+        htmlEl.setAttribute("aria-label", `Explore ${label}`);
+
+        const handleClick = () => {
           setState({ selectedNode: label });
           setClickedLabel(label);
           el.classList.add("lumo-node-clicked");
@@ -67,6 +72,15 @@ function LumoMap() {
           void sendFollowUp(
             `Explain '${label}' in more detail. Context: '${label}' is a topic in the "${capturedInput.title}" mind map.`,
           );
+        };
+
+        el.addEventListener("click", handleClick);
+        el.addEventListener("keydown", (e) => {
+          const ke = e as KeyboardEvent;
+          if (ke.key === "Enter" || ke.key === " ") {
+            e.preventDefault();
+            handleClick();
+          }
         });
       });
     };
