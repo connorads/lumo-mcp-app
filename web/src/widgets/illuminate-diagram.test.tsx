@@ -114,14 +114,28 @@ describe("IlluminateDiagram", () => {
     );
   });
 
-  it("calls mermaid.initialize with dark theme when theme is dark", async () => {
+  it("calls mermaid.initialize with base theme and themeVariables", async () => {
+    const mermaid = await import("mermaid");
+    stubOpenAI();
+    await act(async () => {
+      render(<IlluminateDiagram />);
+    });
+    expect(mermaid.default.initialize).toHaveBeenCalledWith(
+      expect.objectContaining({ theme: "base", themeVariables: expect.any(Object) }),
+    );
+  });
+
+  it("calls mermaid.initialize with dark themeVariables when theme is dark", async () => {
     const mermaid = await import("mermaid");
     stubOpenAI({ theme: "dark" });
     await act(async () => {
       render(<IlluminateDiagram />);
     });
     expect(mermaid.default.initialize).toHaveBeenCalledWith(
-      expect.objectContaining({ theme: "dark" }),
+      expect.objectContaining({
+        theme: "base",
+        themeVariables: expect.objectContaining({ background: "#0f172a" }),
+      }),
     );
   });
 

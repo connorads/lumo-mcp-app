@@ -27,6 +27,9 @@ function IlluminateMindmap() {
 
   const input = toolState.isSuccess ? toolState.input : null;
 
+  const lightPalette = ["#6366f1", "#3b82f6", "#8b5cf6", "#22c55e", "#f59e0b", "#ef4444"];
+  const darkPalette = ["#818cf8", "#60a5fa", "#a78bfa", "#4ade80", "#fbbf24", "#f87171"];
+
   useEffect(() => {
     if (!input || !svgRef.current) return;
 
@@ -35,14 +38,17 @@ function IlluminateMindmap() {
     }
     const { root } = transformerRef.current.transform(input.markdown);
 
-    if (!markmapRef.current) {
-      markmapRef.current = Markmap.create(svgRef.current, {
-        colorFreezeLevel: 2,
-      }, root);
-    } else {
-      markmapRef.current.setData(root);
-      markmapRef.current.fit();
-    }
+    const palette = theme === "dark" ? darkPalette : lightPalette;
+    const colorFn = (node: { state: { depth: number } }) =>
+      palette[node.state.depth % palette.length];
+
+    // Recreate on each render so theme/colour changes take effect
+    svgRef.current.innerHTML = "";
+    markmapRef.current = Markmap.create(
+      svgRef.current,
+      { colorFreezeLevel: 2, color: colorFn },
+      root,
+    );
 
     // Attach click handlers after render settles
     const timer = setTimeout(() => {
@@ -61,7 +67,7 @@ function IlluminateMindmap() {
     }, 200);
 
     return () => clearTimeout(timer);
-  }, [input]);
+  }, [input, theme]);
 
   if (!toolState.isSuccess || !input) {
     return (
@@ -87,7 +93,7 @@ function IlluminateMindmap() {
           )}
         </div>
 
-        <div className="ill-mindmap-container">
+        <div className={`ill-mindmap-container${theme === "dark" ? " markmap-dark" : ""}`}>
           <svg
             ref={svgRef}
             className="ill-mindmap-svg"

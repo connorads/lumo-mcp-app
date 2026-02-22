@@ -29,11 +29,34 @@ function IlluminateDiagram() {
   useEffect(() => {
     if (!input || !containerRef.current) return;
 
-    const mermaidTheme = theme === "dark" ? "dark" : "default";
+    const isDark = theme === "dark";
 
     mermaid.initialize({
       startOnLoad: false,
-      theme: mermaidTheme,
+      theme: "base",
+      themeVariables: isDark
+        ? {
+            primaryColor: "#1e293b",
+            primaryTextColor: "#f1f5f9",
+            primaryBorderColor: "#334155",
+            lineColor: "#475569",
+            background: "#0f172a",
+            mainBkg: "#1e293b",
+            nodeBorder: "#334155",
+            nodeTextColor: "#f1f5f9",
+            edgeLabelBackground: "#1e293b",
+          }
+        : {
+            primaryColor: "#eef2ff",
+            primaryTextColor: "#1e293b",
+            primaryBorderColor: "#6366f1",
+            lineColor: "#94a3b8",
+            background: "#f8fafc",
+            mainBkg: "#ffffff",
+            nodeBorder: "#6366f1",
+            nodeTextColor: "#1e293b",
+            edgeLabelBackground: "#f8fafc",
+          },
       securityLevel: "loose",
       flowchart: { htmlLabels: true, curve: "basis" },
     });

@@ -116,9 +116,27 @@ describe("IlluminateMindmap", () => {
     });
     expect(mockCreate).toHaveBeenCalledWith(
       expect.any(SVGSVGElement),
-      expect.objectContaining({ colorFreezeLevel: 2 }),
+      expect.objectContaining({ colorFreezeLevel: 2, color: expect.any(Function) }),
       MOCK_ROOT,
     );
+  });
+
+  it("applies markmap-dark class to container in dark theme", async () => {
+    stubOpenAI({ theme: "dark" });
+    let container!: HTMLElement;
+    await act(async () => {
+      ({ container } = render(<IlluminateMindmap />));
+    });
+    expect(container.querySelector(".markmap-dark")).toBeInTheDocument();
+  });
+
+  it("does not apply markmap-dark class in light theme", async () => {
+    stubOpenAI({ theme: "light" });
+    let container!: HTMLElement;
+    await act(async () => {
+      ({ container } = render(<IlluminateMindmap />));
+    });
+    expect(container.querySelector(".markmap-dark")).not.toBeInTheDocument();
   });
 
   it("renders hint text", async () => {

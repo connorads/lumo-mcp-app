@@ -10,18 +10,6 @@
   --accent: #6366f1;
   --accent-light: #eef2ff;
 
-  /* Node type colours */
-  --node-concept: #3b82f6;
-  --node-process: #8b5cf6;
-  --node-actor: #22c55e;
-  --node-data: #f59e0b;
-  --node-decision: #ef4444;
-
-  /* Edge */
-  --edge: #94a3b8;
-  --arrowhead: #94a3b8;
-  --edge-label: #475569;
-
   /* Quiz */
   --option-bg: #f1f5f9;
   --option-hover: #e2e8f0;
@@ -40,16 +28,6 @@
   --text-muted: #94a3b8;
   --accent: #818cf8;
   --accent-light: #1e1b4b;
-
-  --node-concept: #60a5fa;
-  --node-process: #a78bfa;
-  --node-actor: #4ade80;
-  --node-data: #fbbf24;
-  --node-decision: #f87171;
-
-  --edge: #475569;
-  --arrowhead: #475569;
-  --edge-label: #94a3b8;
 
   --option-bg: #1e293b;
   --option-hover: #334155;
