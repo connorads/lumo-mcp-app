@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import { vi, describe, it, expect, afterEach } from "vitest";
-import IlluminateQuiz from "./illuminate-quiz.js";
+import LumoQuiz from "./lumo-quiz.js";
 
 vi.mock("skybridge/web", async (importOriginal) => {
   const mod = await importOriginal<typeof import("skybridge/web")>();
@@ -43,17 +43,17 @@ afterEach(() => {
   vi.resetAllMocks();
 });
 
-describe("IlluminateQuiz", () => {
+describe("LumoQuiz", () => {
   it("renders question text and all option buttons", () => {
     stubOpenAI();
-    render(<IlluminateQuiz />);
+    render(<LumoQuiz />);
     expect(screen.getByText(question)).toBeInTheDocument();
     expect(screen.getAllByRole("button")).toHaveLength(options.length);
   });
 
   it("option markers show letters before answering", () => {
     stubOpenAI();
-    render(<IlluminateQuiz />);
+    render(<LumoQuiz />);
     for (const opt of options) {
       expect(screen.getByText(opt.id)).toBeInTheDocument();
     }
@@ -61,7 +61,7 @@ describe("IlluminateQuiz", () => {
 
   it("clicking the correct answer shows Correct! and explanation", () => {
     stubOpenAI();
-    render(<IlluminateQuiz />);
+    render(<LumoQuiz />);
     const buttons = screen.getAllByRole("button");
     const correctBtn = buttons.find((b) =>
       b.textContent?.includes(options[0].text),
@@ -73,7 +73,7 @@ describe("IlluminateQuiz", () => {
 
   it("clicking the correct answer disables all option buttons", () => {
     stubOpenAI();
-    render(<IlluminateQuiz />);
+    render(<LumoQuiz />);
     const correctBtn = screen.getByRole("button", { name: /Open Authorisation/ });
     fireEvent.click(correctBtn);
     for (const opt of options) {
@@ -83,7 +83,7 @@ describe("IlluminateQuiz", () => {
 
   it("clicking a wrong answer shows Not quite — label", () => {
     stubOpenAI();
-    render(<IlluminateQuiz />);
+    render(<LumoQuiz />);
     const buttons = screen.getAllByRole("button");
     const wrongBtn = buttons.find((b) =>
       b.textContent?.includes(options[1].text),
@@ -94,7 +94,7 @@ describe("IlluminateQuiz", () => {
 
   it("sendFollowUpMessage called on Continue click after correct answer", () => {
     const { sendFollowUpMessage } = stubOpenAI();
-    render(<IlluminateQuiz />);
+    render(<LumoQuiz />);
     const correctBtn = screen.getByRole("button", { name: /Open Authorisation/ });
     fireEvent.click(correctBtn);
     const continueBtn = screen.getByRole("button", { name: /Continue/ });
@@ -113,7 +113,7 @@ describe("IlluminateQuiz", () => {
 
   it("sendFollowUpMessage called on Continue click after wrong answer with chosen text", () => {
     const { sendFollowUpMessage } = stubOpenAI();
-    render(<IlluminateQuiz />);
+    render(<LumoQuiz />);
     const buttons = screen.getAllByRole("button");
     const wrongBtn = buttons.find((b) =>
       b.textContent?.includes(options[1].text),
@@ -135,13 +135,13 @@ describe("IlluminateQuiz", () => {
 
   it("shows spinner when tool state is pending", () => {
     stubOpenAI({ toolOutput: null, toolResponseMetadata: null });
-    const { container } = render(<IlluminateQuiz />);
-    expect(container.querySelector(".ill-spinner")).toBeInTheDocument();
+    const { container } = render(<LumoQuiz />);
+    expect(container.querySelector(".lumo-spinner")).toBeInTheDocument();
   });
 
   it("does not send follow-up message twice", () => {
     const { sendFollowUpMessage } = stubOpenAI();
-    render(<IlluminateQuiz />);
+    render(<LumoQuiz />);
     const correctBtn = screen.getByRole("button", { name: /Open Authorisation/ });
     fireEvent.click(correctBtn);
     const continueBtn = screen.getByRole("button", { name: /Continue/ });

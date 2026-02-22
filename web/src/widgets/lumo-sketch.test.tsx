@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, cleanup, act } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
-import IlluminateDiagram from "./illuminate-diagram.js";
+import LumoSketch from "./lumo-sketch.js";
 
 vi.mock("skybridge/web", async (importOriginal) => {
   const mod = await importOriginal<typeof import("skybridge/web")>();
@@ -66,17 +66,17 @@ afterEach(() => {
   vi.resetAllMocks();
 });
 
-describe("IlluminateDiagram", () => {
+describe("LumoSketch", () => {
   it("shows spinner when tool state is pending", () => {
     stubOpenAI({ toolOutput: null, toolResponseMetadata: null });
-    const { container } = render(<IlluminateDiagram />);
-    expect(container.querySelector(".ill-spinner")).toBeInTheDocument();
+    const { container } = render(<LumoSketch />);
+    expect(container.querySelector(".lumo-spinner")).toBeInTheDocument();
   });
 
   it("renders title and step badge", async () => {
     stubOpenAI();
     await act(async () => {
-      render(<IlluminateDiagram />);
+      render(<LumoSketch />);
     });
     expect(screen.getByText(diagramInput.title)).toBeInTheDocument();
     expect(screen.getByText("Step 1/3")).toBeInTheDocument();
@@ -86,7 +86,7 @@ describe("IlluminateDiagram", () => {
     const { stepInfo: _, ...withoutStep } = diagramInput;
     stubOpenAI({ toolInput: withoutStep });
     await act(async () => {
-      render(<IlluminateDiagram />);
+      render(<LumoSketch />);
     });
     expect(screen.queryByText(/^Step \d+\/\d+$/)).not.toBeInTheDocument();
   });
@@ -94,7 +94,7 @@ describe("IlluminateDiagram", () => {
   it("renders explanation text", async () => {
     stubOpenAI();
     await act(async () => {
-      render(<IlluminateDiagram />);
+      render(<LumoSketch />);
     });
     expect(screen.getByText(diagramInput.explanation)).toBeInTheDocument();
   });
@@ -103,7 +103,7 @@ describe("IlluminateDiagram", () => {
     const mermaid = await import("mermaid");
     stubOpenAI();
     await act(async () => {
-      render(<IlluminateDiagram />);
+      render(<LumoSketch />);
     });
     expect(mermaid.default.initialize).toHaveBeenCalledWith(
       expect.objectContaining({ securityLevel: "loose" }),
@@ -118,7 +118,7 @@ describe("IlluminateDiagram", () => {
     const mermaid = await import("mermaid");
     stubOpenAI();
     await act(async () => {
-      render(<IlluminateDiagram />);
+      render(<LumoSketch />);
     });
     expect(mermaid.default.initialize).toHaveBeenCalledWith(
       expect.objectContaining({ theme: "base", themeVariables: expect.any(Object) }),
@@ -129,12 +129,12 @@ describe("IlluminateDiagram", () => {
     const mermaid = await import("mermaid");
     stubOpenAI({ theme: "dark" });
     await act(async () => {
-      render(<IlluminateDiagram />);
+      render(<LumoSketch />);
     });
     expect(mermaid.default.initialize).toHaveBeenCalledWith(
       expect.objectContaining({
         theme: "base",
-        themeVariables: expect.objectContaining({ background: "#0f172a" }),
+        themeVariables: expect.objectContaining({ background: "#1A1A2E" }),
       }),
     );
   });
@@ -143,7 +143,7 @@ describe("IlluminateDiagram", () => {
     const mermaid = await import("mermaid");
     stubOpenAI({ toolInput: { ...diagramInput, mermaid: "graph TD\n  A[Line1\\nLine2] --> B" } });
     await act(async () => {
-      render(<IlluminateDiagram />);
+      render(<LumoSketch />);
     });
     expect(mermaid.default.render).toHaveBeenCalledWith(
       expect.stringContaining("mermaid-"),
@@ -155,7 +155,7 @@ describe("IlluminateDiagram", () => {
     const { sendFollowUpMessage } = stubOpenAI();
     let container!: HTMLElement;
     await act(async () => {
-      ({ container } = render(<IlluminateDiagram />));
+      ({ container } = render(<LumoSketch />));
     });
     const node = container.querySelector(".node") as HTMLElement;
     fireEvent.click(node);
@@ -169,7 +169,7 @@ describe("IlluminateDiagram", () => {
   it("renders hint text", async () => {
     stubOpenAI();
     await act(async () => {
-      render(<IlluminateDiagram />);
+      render(<LumoSketch />);
     });
     expect(
       screen.getByText("Click any node to explore it further"),

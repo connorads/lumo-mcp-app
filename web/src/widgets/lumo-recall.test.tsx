@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import { vi, describe, it, expect, afterEach } from "vitest";
-import IlluminateFillBlank from "./illuminate-fill-blank.js";
+import LumoRecall from "./lumo-recall.js";
 
 vi.mock("skybridge/web", async (importOriginal) => {
   const mod = await importOriginal<typeof import("skybridge/web")>();
@@ -44,30 +44,30 @@ afterEach(() => {
   vi.resetAllMocks();
 });
 
-describe("IlluminateFillBlank", () => {
+describe("LumoRecall", () => {
   it("shows spinner when tool state is pending", () => {
     stubOpenAI({ toolOutput: null, toolResponseMetadata: null });
-    const { container } = render(<IlluminateFillBlank />);
-    expect(container.querySelector(".ill-spinner")).toBeInTheDocument();
+    const { container } = render(<LumoRecall />);
+    expect(container.querySelector(".lumo-spinner")).toBeInTheDocument();
   });
 
   it("renders the prompt text split around blank inputs", () => {
     stubOpenAI();
-    render(<IlluminateFillBlank />);
+    render(<LumoRecall />);
     expect(screen.getByText(/In OAuth2, the/)).toBeInTheDocument();
     expect(screen.getByText(/issues access tokens to/)).toBeInTheDocument();
   });
 
   it("renders an input for each blank", () => {
     stubOpenAI();
-    render(<IlluminateFillBlank />);
+    render(<LumoRecall />);
     const inputs = screen.getAllByRole("textbox");
     expect(inputs).toHaveLength(fillBlankInput.blanks.length);
   });
 
   it("does not show explanation before all blanks are correct", () => {
     stubOpenAI();
-    render(<IlluminateFillBlank />);
+    render(<LumoRecall />);
     expect(
       screen.queryByText(fillBlankInput.explanation),
     ).not.toBeInTheDocument();
@@ -75,7 +75,7 @@ describe("IlluminateFillBlank", () => {
 
   it("correct answer on Enter calls setWidgetState with correct:true", () => {
     const { setWidgetState } = stubOpenAI();
-    render(<IlluminateFillBlank />);
+    render(<LumoRecall />);
     const inputs = screen.getAllByRole("textbox");
     fireEvent.change(inputs[0]!, { target: { value: "authorisation server" } });
     fireEvent.keyDown(inputs[0]!, { key: "Enter" });
@@ -93,7 +93,7 @@ describe("IlluminateFillBlank", () => {
 
   it("wrong answer on blur calls setWidgetState with correct:false", () => {
     const { setWidgetState } = stubOpenAI();
-    render(<IlluminateFillBlank />);
+    render(<LumoRecall />);
     const inputs = screen.getAllByRole("textbox");
     fireEvent.change(inputs[0]!, { target: { value: "wrong answer" } });
     fireEvent.blur(inputs[0]!);
@@ -120,7 +120,7 @@ describe("IlluminateFillBlank", () => {
         },
       },
     });
-    render(<IlluminateFillBlank />);
+    render(<LumoRecall />);
     const continueBtn = screen.getByRole("button", { name: /Continue/ });
     fireEvent.click(continueBtn);
     expect(sendFollowUpMessage).toHaveBeenCalledWith(
@@ -142,7 +142,7 @@ describe("IlluminateFillBlank", () => {
         },
       },
     });
-    render(<IlluminateFillBlank />);
+    render(<LumoRecall />);
     const continueBtn = screen.getByRole("button", { name: /Continue/ });
     fireEvent.click(continueBtn);
     // Continue button replaced by sending text after first click
@@ -162,7 +162,7 @@ describe("IlluminateFillBlank", () => {
         },
       },
     });
-    render(<IlluminateFillBlank />);
+    render(<LumoRecall />);
     expect(
       screen.getByText(fillBlankInput.blanks[0].hint!),
     ).toBeInTheDocument();

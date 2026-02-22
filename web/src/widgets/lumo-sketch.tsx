@@ -13,8 +13,8 @@ import {
 
 /* ── Component ───────────────────────────────────────────── */
 
-function IlluminateDiagram() {
-  const toolState = useToolInfo<"illuminate-diagram">();
+function LumoSketch() {
+  const toolState = useToolInfo<"lumo-sketch">();
   const sendFollowUp = useSendFollowUpMessage();
   const [state, setState] = useWidgetState<{ selectedNodeId: string | null }>({
     selectedNodeId: null,
@@ -41,22 +41,22 @@ function IlluminateDiagram() {
             primaryTextColor: "#f1f5f9",
             primaryBorderColor: "#334155",
             lineColor: "#475569",
-            background: "#0f172a",
+            background: "#1A1A2E",
             mainBkg: "#1e293b",
             nodeBorder: "#334155",
             nodeTextColor: "#f1f5f9",
             edgeLabelBackground: "#1e293b",
           }
         : {
-            primaryColor: "#eef2ff",
+            primaryColor: "#FFF3E0",
             primaryTextColor: "#1e293b",
-            primaryBorderColor: "#6366f1",
+            primaryBorderColor: "#F27D2A",
             lineColor: "#94a3b8",
-            background: "#f8fafc",
+            background: "#FFF8F0",
             mainBkg: "#ffffff",
-            nodeBorder: "#6366f1",
+            nodeBorder: "#F27D2A",
             nodeTextColor: "#1e293b",
-            edgeLabelBackground: "#f8fafc",
+            edgeLabelBackground: "#FFF8F0",
           },
       securityLevel: "loose",
       flowchart: { htmlLabels: true, curve: "basis" },
@@ -98,8 +98,8 @@ function IlluminateDiagram() {
           const handleClick = () => {
             setState({ selectedNodeId: nodeId });
             setClickedLabel(label);
-            htmlEl.classList.add("ill-node-clicked");
-            setTimeout(() => htmlEl.classList.remove("ill-node-clicked"), 700);
+            htmlEl.classList.add("lumo-node-clicked");
+            setTimeout(() => htmlEl.classList.remove("lumo-node-clicked"), 700);
             void sendFollowUp(
               `Explain '${label}' in more detail with a new diagram. Context: '${label}' is a node in the "${input.title}" diagram.${description ? ` Description: ${description}` : ""}`,
             );
@@ -123,8 +123,8 @@ function IlluminateDiagram() {
 
   if (!toolState.isSuccess || !input) {
     return (
-      <div className="ill-loading">
-        <div className="ill-spinner" />
+      <div className="lumo-loading">
+        <div className="lumo-spinner" />
       </div>
     );
   }
@@ -135,33 +135,33 @@ function IlluminateDiagram() {
 
   return (
     <DataLLM content={dataContent}>
-      <div className="ill-diagram-root" data-theme={theme}>
-        <div className="ill-diagram-header">
-          <h2 className="ill-title">{title}</h2>
+      <div className="lumo-diagram-root" data-theme={theme}>
+        <div className="lumo-diagram-header">
+          <h2 className="lumo-title">{title}</h2>
           {stepInfo && (
-            <span className="ill-step-badge">
+            <span className="lumo-step-badge">
               Step {stepInfo.current}/{stepInfo.total}
             </span>
           )}
         </div>
 
         {stepInfo && (
-          <div className="ill-progress-track">
+          <div className="lumo-progress-track">
             <div
-              className="ill-progress-fill"
+              className="lumo-progress-fill"
               style={{ width: `${(stepInfo.current / stepInfo.total) * 100}%` }}
             />
           </div>
         )}
 
-        <div className="ill-mermaid-container" ref={containerRef}>
+        <div className="lumo-mermaid-container" ref={containerRef}>
           {renderError && (
-            <p className="ill-hint">Failed to render diagram: {renderError}</p>
+            <p className="lumo-hint">Failed to render diagram: {renderError}</p>
           )}
         </div>
 
-        {explanation && <p className="ill-explanation">{explanation}</p>}
-        <p className="ill-hint">
+        {explanation && <p className="lumo-explanation">{explanation}</p>}
+        <p className="lumo-hint">
           {clickedLabel ? `Exploring ${clickedLabel}…` : "Click any node to explore it further"}
         </p>
       </div>
@@ -169,5 +169,5 @@ function IlluminateDiagram() {
   );
 }
 
-export default IlluminateDiagram;
-mountWidget(<IlluminateDiagram />);
+export default LumoSketch;
+mountWidget(<LumoSketch />);

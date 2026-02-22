@@ -1,6 +1,6 @@
 Before writing code, first explore the project structure, then invoke the `chatgpt-app-builder` skill for documentation.
 
-# Illuminate — Interactive Visual AI Tutor
+# Lumo — Interactive Visual AI Tutor
 
 Hackathon project from **Claude Code London Hack Night 03** (20 Feb 2026). This MCP App teaches concepts with an adaptive visual loop inside the assistant.
 
@@ -13,16 +13,16 @@ The app should feel like a live tutor:
 - Check understanding with a quiz or fill-in-the-blank exercise
 - Adapt the next explanation based on the result
 
-Pitch: "Illuminate turns any concept into a live, visual, adaptive lesson in-chat."
+Pitch: "Lumo turns any concept into a live, visual, adaptive lesson in-chat."
 
 ## Learning Spiral
 
 Core loop: **Explore -> Interact -> Drill -> Check -> Adapt -> Suggest**
 
-- **Explore:** model calls `illuminate-diagram` or `illuminate-mindmap`
+- **Explore:** model calls `lumo-sketch` or `lumo-map`
 - **Interact:** user clicks a node or branch
 - **Drill:** widget sends follow-up prompt, model deepens explanation
-- **Check:** model calls `illuminate-quiz` (recognition) or `illuminate-fill-blank` (recall)
+- **Check:** model calls `lumo-quiz` (recognition) or `lumo-recall` (recall)
 - **Adapt:** correct answer advances; wrong answer re-explains differently
 - **Suggest:** model offers adjacent topics
 
@@ -32,20 +32,20 @@ No fixed endpoint; session ends naturally when the user stops engaging.
 
 ## Current App Surface
 
-- `illuminate-diagram` (server tool + widget)
+- `lumo-sketch` (server tool + widget)
   - Interactive Mermaid.js diagram with clickable nodes (dagre layout)
   - Supports flowchart, sequenceDiagram, stateDiagram-v2, classDiagram
   - `nodeDescriptions` map for drill-down context
   - Includes optional `stepInfo` (`current`/`total`)
-- `illuminate-mindmap` (server tool + widget)
+- `lumo-map` (server tool + widget)
   - Zoomable, pannable Markmap mind map from Markdown headings
   - Click any branch to explore that subtopic via follow-up
   - Use for concept landscapes/hierarchies (no clear directional flow)
-- `illuminate-quiz` (server tool + widget)
+- `lumo-quiz` (server tool + widget)
   - Multiple-choice quiz (2-4 options) — tests recognition (Bloom's Remember/Understand)
   - Uses `correctId`, `explanation`, `topic`
   - Sends delayed follow-up message after answer
-- `illuminate-fill-blank` (server tool + widget)
+- `lumo-recall` (server tool + widget)
   - Fill-in-the-blank active recall — tests retrieval (Bloom's Apply/Analyse)
   - `{{BLANK_ID}}` placeholders in prompt, per-blank hints and answers
   - Correct turns green and locks; wrong shows hint; all correct reveals explanation + follow-up
@@ -64,10 +64,10 @@ No fixed endpoint; session ends naturally when the user stops engaging.
 - `server/src/index.ts` - MCP server, widget registration, fallback text
 - `server/src/schemas.ts` - Zod input contracts (diagram, mindmap, quiz, fill-blank)
 - `web/src/helpers.ts` - typed Skybridge helpers
-- `web/src/widgets/illuminate-diagram.tsx` - Mermaid.js diagram + drill-down follow-ups
-- `web/src/widgets/illuminate-mindmap.tsx` - Markmap mind map + branch click follow-ups
-- `web/src/widgets/illuminate-quiz.tsx` - multiple-choice quiz + adaptive follow-ups
-- `web/src/widgets/illuminate-fill-blank.tsx` - fill-in-the-blank active recall widget
+- `web/src/widgets/lumo-sketch.tsx` - Mermaid.js diagram + drill-down follow-ups
+- `web/src/widgets/lumo-map.tsx` - Markmap mind map + branch click follow-ups
+- `web/src/widgets/lumo-quiz.tsx` - multiple-choice quiz + adaptive follow-ups
+- `web/src/widgets/lumo-recall.tsx` - fill-in-the-blank active recall widget
 - `web/src/index.css` - shared visual theme and widget styles
 
 ## MCP App Skills

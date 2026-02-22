@@ -47,8 +47,8 @@ function normalise(s: string): string {
 
 /* ── Component ───────────────────────────────────────────── */
 
-function IlluminateFillBlank() {
-  const toolState = useToolInfo<"illuminate-fill-blank">();
+function LumoRecall() {
+  const toolState = useToolInfo<"lumo-recall">();
   const sendFollowUp = useSendFollowUpMessage();
   const [state, setState] = useWidgetState<WidgetState>({
     answers: {},
@@ -61,8 +61,8 @@ function IlluminateFillBlank() {
 
   if (!toolState.isSuccess || !input) {
     return (
-      <div className="ill-loading">
-        <div className="ill-spinner" />
+      <div className="lumo-loading">
+        <div className="lumo-spinner" />
       </div>
     );
   }
@@ -100,13 +100,13 @@ function IlluminateFillBlank() {
   return (
     <DataLLM content={dataContent}>
       <div
-        className={["ill-fill-root", allCorrect ? "ill-celebrate" : ""].filter(Boolean).join(" ")}
+        className={["lumo-fill-root", allCorrect ? "lumo-celebrate" : ""].filter(Boolean).join(" ")}
         data-theme={theme}
       >
-        <div className="ill-quiz-eyebrow">Fill in the blank</div>
-        <p className="ill-instruction">Press Enter to check each answer</p>
+        <div className="lumo-quiz-eyebrow">Fill in the blank</div>
+        <p className="lumo-instruction">Press Enter to check each answer</p>
 
-        <p className="ill-fill-prompt">
+        <p className="lumo-fill-prompt">
           {segments.map((seg, i) => {
             if (seg.type === "text") return <span key={i}>{seg.text}</span>;
 
@@ -116,12 +116,12 @@ function IlluminateFillBlank() {
             const isWrong = blankState?.correct === false;
 
             return (
-              <span key={i} className="ill-fill-blank-wrap">
+              <span key={i} className="lumo-fill-blank-wrap">
                 <input
                   className={[
-                    "ill-fill-input",
-                    isCorrect ? "ill-correct" : "",
-                    isWrong ? "ill-wrong" : "",
+                    "lumo-fill-input",
+                    isCorrect ? "lumo-correct" : "",
+                    isWrong ? "lumo-wrong" : "",
                   ]
                     .filter(Boolean)
                     .join(" ")}
@@ -139,7 +139,7 @@ function IlluminateFillBlank() {
                   }}
                 />
                 {isWrong && blankDef?.hint && (
-                  <span className="ill-fill-hint">{blankDef.hint}</span>
+                  <span className="lumo-fill-hint">{blankDef.hint}</span>
                 )}
               </span>
             );
@@ -147,25 +147,25 @@ function IlluminateFillBlank() {
         </p>
 
         {allCorrect && (
-          <div className="ill-explanation-box ill-success">
-            <div className="ill-explanation-label">All correct!</div>
+          <div className="lumo-explanation-box lumo-success">
+            <div className="lumo-explanation-label">All correct!</div>
             {explanation}
           </div>
         )}
 
         {allCorrect && !followUpSent && (
-          <button className="ill-continue-btn" onClick={sendContinue}>
+          <button className="lumo-continue-btn" onClick={sendContinue}>
             Continue →
           </button>
         )}
 
         {allCorrect && followUpSent && (
-          <p className="ill-sending">Continuing the lesson…</p>
+          <p className="lumo-sending">Continuing the lesson…</p>
         )}
       </div>
     </DataLLM>
   );
 }
 
-export default IlluminateFillBlank;
-mountWidget(<IlluminateFillBlank />);
+export default LumoRecall;
+mountWidget(<LumoRecall />);

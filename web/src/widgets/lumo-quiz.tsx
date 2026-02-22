@@ -12,8 +12,8 @@ import {
 
 /* ── Component ───────────────────────────────────────────── */
 
-function IlluminateQuiz() {
-  const toolState = useToolInfo<"illuminate-quiz">();
+function LumoQuiz() {
+  const toolState = useToolInfo<"lumo-quiz">();
   const sendFollowUp = useSendFollowUpMessage();
   const [state, setState] = useWidgetState<{ answeredId: string | null }>({
     answeredId: null,
@@ -27,8 +27,8 @@ function IlluminateQuiz() {
 
   if (!toolState.isSuccess || !input) {
     return (
-      <div className="ill-loading">
-        <div className="ill-spinner" />
+      <div className="lumo-loading">
+        <div className="lumo-spinner" />
       </div>
     );
   }
@@ -53,9 +53,9 @@ function IlluminateQuiz() {
 
   const getOptionClass = (optionId: string): string => {
     if (!isAnswered) return "";
-    if (optionId === answeredId && optionId === correctId) return "ill-correct";
-    if (optionId === answeredId && optionId !== correctId) return "ill-wrong";
-    if (optionId === correctId) return "ill-correct-highlight";
+    if (optionId === answeredId && optionId === correctId) return "lumo-correct";
+    if (optionId === answeredId && optionId !== correctId) return "lumo-wrong";
+    if (optionId === correctId) return "lumo-correct-highlight";
     return "";
   };
 
@@ -73,22 +73,22 @@ function IlluminateQuiz() {
 
   return (
     <DataLLM content={dataContent}>
-      <div className="ill-quiz-root" data-theme={theme}>
-        <div className="ill-quiz-eyebrow">Quick check</div>
+      <div className="lumo-quiz-root" data-theme={theme}>
+        <div className="lumo-quiz-eyebrow">Quick check</div>
 
-        <p className="ill-quiz-question">{question}</p>
+        <p className="lumo-quiz-question">{question}</p>
 
-        <div className="ill-quiz-options">
+        <div className="lumo-quiz-options">
           {options.map((option) => (
             <button
               key={option.id}
-              className={["ill-option", getOptionClass(option.id)].filter(Boolean).join(" ")}
+              className={["lumo-option", getOptionClass(option.id)].filter(Boolean).join(" ")}
               onClick={() => {
                 if (!isAnswered) setState({ answeredId: option.id });
               }}
               disabled={isAnswered}
             >
-              <span className="ill-option-marker">
+              <span className="lumo-option-marker">
                 {getMarkerSymbol(option.id)}
               </span>
               {option.text}
@@ -97,8 +97,8 @@ function IlluminateQuiz() {
         </div>
 
         {isAnswered && (
-          <div className={["ill-explanation-box", isCorrect ? "ill-success" : "ill-retry"].join(" ")}>
-            <div className="ill-explanation-label">
+          <div className={["lumo-explanation-box", isCorrect ? "lumo-success" : "lumo-retry"].join(" ")}>
+            <div className="lumo-explanation-label">
               {isCorrect ? "Correct!" : "Not quite —"}
             </div>
             {explanation}
@@ -106,18 +106,18 @@ function IlluminateQuiz() {
         )}
 
         {isAnswered && !followUpSent && (
-          <button className="ill-continue-btn" onClick={sendContinue}>
+          <button className="lumo-continue-btn" onClick={sendContinue}>
             Continue →
           </button>
         )}
 
         {isAnswered && followUpSent && (
-          <p className="ill-sending">Continuing the lesson…</p>
+          <p className="lumo-sending">Continuing the lesson…</p>
         )}
       </div>
     </DataLLM>
   );
 }
 
-export default IlluminateQuiz;
-mountWidget(<IlluminateQuiz />);
+export default LumoQuiz;
+mountWidget(<LumoQuiz />);

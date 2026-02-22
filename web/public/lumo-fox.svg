@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Left ear -->
+  <polygon points="10,28 22,4 26,28" fill="#F27D2A"/>
+  <polygon points="16,16 22,4 24,18" fill="#FFBA42"/>
+  <!-- Right ear -->
+  <polygon points="38,28 42,4 54,28" fill="#F27D2A"/>
+  <polygon points="40,18 42,4 48,16" fill="#FFBA42"/>
+  <!-- Face -->
+  <ellipse cx="32" cy="38" rx="20" ry="18" fill="#F27D2A"/>
+  <!-- Inner face / lighter belly area -->
+  <ellipse cx="32" cy="42" rx="14" ry="12" fill="#F9A35C"/>
+  <!-- Eyes -->
+  <circle cx="24" cy="34" r="2.5" fill="#1A1A2E"/>
+  <circle cx="40" cy="34" r="2.5" fill="#1A1A2E"/>
+  <!-- Eye shine -->
+  <circle cx="25" cy="33" r="0.8" fill="#FFF8F0"/>
+  <circle cx="41" cy="33" r="0.8" fill="#FFF8F0"/>
+  <!-- Nose -->
+  <ellipse cx="32" cy="40" rx="2.5" ry="1.8" fill="#1A1A2E"/>
+  <!-- Subtle glow at ear tips (soft circle) -->
+  <circle cx="22" cy="6" r="4" fill="#FFBA42" opacity="0.3"/>
+  <circle cx="42" cy="6" r="4" fill="#FFBA42" opacity="0.3"/>
+</svg>

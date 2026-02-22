@@ -1,6 +1,6 @@
 import { render, screen, cleanup, act } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
-import IlluminateMindmap from "./illuminate-mindmap.js";
+import LumoMap from "./lumo-map.js";
 
 vi.mock("skybridge/web", async (importOriginal) => {
   const mod = await importOriginal<typeof import("skybridge/web")>();
@@ -68,17 +68,17 @@ afterEach(() => {
   vi.resetAllMocks();
 });
 
-describe("IlluminateMindmap", () => {
+describe("LumoMap", () => {
   it("shows spinner when tool state is pending", () => {
     stubOpenAI({ toolOutput: null, toolResponseMetadata: null });
-    const { container } = render(<IlluminateMindmap />);
-    expect(container.querySelector(".ill-spinner")).toBeInTheDocument();
+    const { container } = render(<LumoMap />);
+    expect(container.querySelector(".lumo-spinner")).toBeInTheDocument();
   });
 
   it("renders title and explanation", async () => {
     stubOpenAI();
     await act(async () => {
-      render(<IlluminateMindmap />);
+      render(<LumoMap />);
     });
     expect(screen.getByText(mindmapInput.title)).toBeInTheDocument();
     expect(screen.getByText(mindmapInput.explanation)).toBeInTheDocument();
@@ -87,7 +87,7 @@ describe("IlluminateMindmap", () => {
   it("renders step badge when stepInfo is provided", async () => {
     stubOpenAI();
     await act(async () => {
-      render(<IlluminateMindmap />);
+      render(<LumoMap />);
     });
     expect(screen.getByText("Step 2/4")).toBeInTheDocument();
   });
@@ -96,7 +96,7 @@ describe("IlluminateMindmap", () => {
     const { stepInfo: _, ...withoutStep } = mindmapInput;
     stubOpenAI({ toolInput: withoutStep });
     await act(async () => {
-      render(<IlluminateMindmap />);
+      render(<LumoMap />);
     });
     expect(screen.queryByText(/^Step \d+\/\d+$/)).not.toBeInTheDocument();
   });
@@ -104,7 +104,7 @@ describe("IlluminateMindmap", () => {
   it("calls transformer.transform with markdown input", async () => {
     stubOpenAI();
     await act(async () => {
-      render(<IlluminateMindmap />);
+      render(<LumoMap />);
     });
     expect(mockTransformFn).toHaveBeenCalledWith(mindmapInput.markdown);
   });
@@ -112,7 +112,7 @@ describe("IlluminateMindmap", () => {
   it("calls Markmap.create with the SVG element and root data", async () => {
     stubOpenAI();
     await act(async () => {
-      render(<IlluminateMindmap />);
+      render(<LumoMap />);
     });
     expect(mockCreate).toHaveBeenCalledWith(
       expect.any(SVGSVGElement),
@@ -125,7 +125,7 @@ describe("IlluminateMindmap", () => {
     stubOpenAI({ theme: "dark" });
     let container!: HTMLElement;
     await act(async () => {
-      ({ container } = render(<IlluminateMindmap />));
+      ({ container } = render(<LumoMap />));
     });
     expect(container.querySelector(".markmap-dark")).toBeInTheDocument();
   });
@@ -134,7 +134,7 @@ describe("IlluminateMindmap", () => {
     stubOpenAI({ theme: "light" });
     let container!: HTMLElement;
     await act(async () => {
-      ({ container } = render(<IlluminateMindmap />));
+      ({ container } = render(<LumoMap />));
     });
     expect(container.querySelector(".markmap-dark")).not.toBeInTheDocument();
   });
@@ -142,7 +142,7 @@ describe("IlluminateMindmap", () => {
   it("renders hint text", async () => {
     stubOpenAI();
     await act(async () => {
-      render(<IlluminateMindmap />);
+      render(<LumoMap />);
     });
     expect(
       screen.getByText("Click any branch to explore it further"),

@@ -1,40 +1,40 @@
 /* ============================================================
-   Illuminate — theme tokens
+   Lumo — theme tokens
    ============================================================ */
 :root {
-  --bg: #f8fafc;
+  --bg: #FFF8F0;
   --surface: #ffffff;
   --border: #e2e8f0;
   --text: #1e293b;
-  --text-muted: #64748b;
-  --accent: #6366f1;
-  --accent-light: #eef2ff;
+  --text-muted: #6B7280;
+  --accent: #F27D2A;
+  --accent-light: #FFF3E0;
 
   /* Quiz */
   --option-bg: #f1f5f9;
   --option-hover: #e2e8f0;
   --option-border: #cbd5e1;
-  --correct: #16a34a;
+  --correct: #3EBD7A;
   --correct-bg: #dcfce7;
-  --wrong: #dc2626;
+  --wrong: #E8453C;
   --wrong-bg: #fee2e2;
 }
 
 [data-theme="dark"] {
-  --bg: #0f172a;
+  --bg: #1A1A2E;
   --surface: #1e293b;
   --border: #334155;
   --text: #f1f5f9;
   --text-muted: #94a3b8;
-  --accent: #818cf8;
-  --accent-light: #1e1b4b;
+  --accent: #FFBA42;
+  --accent-light: #3D2800;
 
   --option-bg: #1e293b;
   --option-hover: #334155;
   --option-border: #475569;
-  --correct: #4ade80;
+  --correct: #5ED99A;
   --correct-bg: #14532d;
-  --wrong: #f87171;
+  --wrong: #F27066;
   --wrong-bg: #450a0a;
 }
 
@@ -60,23 +60,23 @@ body {
 /* ============================================================
    Loading
    ============================================================ */
-.ill-loading {
+.lumo-loading {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 120px;
 }
 
-.ill-spinner {
+.lumo-spinner {
   width: 32px;
   height: 32px;
   border: 3px solid var(--border);
   border-top-color: var(--accent);
   border-radius: 50%;
-  animation: ill-spin 0.8s linear infinite;
+  animation: lumo-spin 0.8s linear infinite;
 }
 
-@keyframes ill-spin {
+@keyframes lumo-spin {
   to {
     transform: rotate(360deg);
   }
@@ -85,7 +85,7 @@ body {
 /* ============================================================
    Diagram widget
    ============================================================ */
-.ill-diagram-root {
+.lumo-diagram-root {
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -95,20 +95,20 @@ body {
   border: 1px solid var(--border);
 }
 
-.ill-diagram-header {
+.lumo-diagram-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
 }
 
-.ill-title {
+.lumo-title {
   font-size: 16px;
   font-weight: 600;
   color: var(--text);
 }
 
-.ill-step-badge {
+.lumo-step-badge {
   font-size: 11px;
   font-weight: 500;
   color: var(--accent);
@@ -118,19 +118,19 @@ body {
   white-space: nowrap;
 }
 
-.ill-mermaid-container {
+.lumo-mermaid-container {
   width: 100%;
   overflow: auto;
 }
 
-.ill-mermaid-container svg {
+.lumo-mermaid-container svg {
   max-width: 100%;
   height: auto;
   display: block;
 }
 
 /* Progress bar */
-.ill-progress-track {
+.lumo-progress-track {
   width: 100%;
   height: 4px;
   background: var(--border);
@@ -138,7 +138,7 @@ body {
   overflow: hidden;
 }
 
-.ill-progress-fill {
+.lumo-progress-fill {
   height: 100%;
   background: var(--accent);
   border-radius: 9999px;
@@ -148,19 +148,19 @@ body {
 /* ============================================================
    Mind map widget
    ============================================================ */
-.ill-mindmap-container {
+.lumo-mindmap-container {
   width: 100%;
   height: 400px;
   overflow: hidden;
 }
 
-.ill-mindmap-svg {
+.lumo-mindmap-svg {
   width: 100%;
   height: 100%;
   display: block;
 }
 
-.ill-explanation {
+.lumo-explanation {
   font-size: 13px;
   color: var(--text-muted);
   line-height: 1.6;
@@ -168,7 +168,7 @@ body {
   padding-top: 10px;
 }
 
-.ill-hint {
+.lumo-hint {
   font-size: 11px;
   color: var(--text-muted);
   font-style: italic;
@@ -176,18 +176,18 @@ body {
 }
 
 /* Click feedback for diagram/mindmap nodes */
-@keyframes ill-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.6); }
-  70% { box-shadow: 0 0 0 8px rgba(99, 102, 241, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+@keyframes lumo-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(242, 125, 42, 0.6); }
+  70% { box-shadow: 0 0 0 8px rgba(242, 125, 42, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(242, 125, 42, 0); }
 }
 
-.ill-node-clicked {
-  animation: ill-pulse 0.6s ease-out;
+.lumo-node-clicked {
+  animation: lumo-pulse 0.6s ease-out;
 }
 
 /* Mindmap node click highlight (SVG stroke) */
-.markmap-node.ill-node-clicked circle {
+.markmap-node.lumo-node-clicked circle {
   stroke: var(--accent) !important;
   stroke-width: 3px !important;
 }
@@ -195,7 +195,7 @@ body {
 /* ============================================================
    Fill-in-the-blank widget
    ============================================================ */
-.ill-fill-root {
+.lumo-fill-root {
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -205,17 +205,17 @@ body {
   border: 1px solid var(--border);
 }
 
-.ill-fill-root.ill-celebrate {
-  animation: ill-celebrate 0.5s ease;
+.lumo-fill-root.lumo-celebrate {
+  animation: lumo-celebrate 0.5s ease;
 }
 
-.ill-fill-prompt {
+.lumo-fill-prompt {
   font-size: 15px;
   color: var(--text);
   line-height: 2;
 }
 
-.ill-fill-blank-wrap {
+.lumo-fill-blank-wrap {
   display: inline-flex;
   flex-direction: column;
   align-items: flex-start;
@@ -223,7 +223,7 @@ body {
   margin: 0 2px;
 }
 
-.ill-fill-input {
+.lumo-fill-input {
   display: inline-block;
   background: transparent;
   border: none;
@@ -237,24 +237,24 @@ body {
   transition: border-color 0.15s ease, color 0.15s ease;
 }
 
-.ill-fill-input.ill-correct {
+.lumo-fill-input.lumo-correct {
   border-bottom-color: var(--correct);
   color: var(--correct);
 }
 
-.ill-fill-input.ill-wrong {
+.lumo-fill-input.lumo-wrong {
   border-bottom-color: var(--wrong);
   color: var(--wrong);
 }
 
-.ill-fill-hint {
+.lumo-fill-hint {
   font-size: 11px;
   font-style: italic;
   color: var(--text-muted);
   margin-top: 2px;
 }
 
-.ill-instruction {
+.lumo-instruction {
   font-size: 12px;
   color: var(--text-muted);
 }
@@ -262,7 +262,7 @@ body {
 /* ============================================================
    Quiz widget
    ============================================================ */
-.ill-quiz-root {
+.lumo-quiz-root {
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -272,7 +272,7 @@ body {
   border: 1px solid var(--border);
 }
 
-.ill-quiz-eyebrow {
+.lumo-quiz-eyebrow {
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
@@ -280,20 +280,20 @@ body {
   color: var(--accent);
 }
 
-.ill-quiz-question {
+.lumo-quiz-question {
   font-size: 15px;
   font-weight: 600;
   color: var(--text);
   line-height: 1.4;
 }
 
-.ill-quiz-options {
+.lumo-quiz-options {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.ill-option {
+.lumo-option {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -310,36 +310,36 @@ body {
   width: 100%;
 }
 
-.ill-option:hover:not(:disabled) {
+.lumo-option:hover:not(:disabled) {
   background: var(--option-hover);
   border-color: var(--accent);
   transform: translateX(2px);
 }
 
-.ill-option:disabled {
+.lumo-option:disabled {
   cursor: default;
 }
 
-.ill-option.ill-correct {
+.lumo-option.lumo-correct {
   background: var(--correct-bg);
   border-color: var(--correct);
   color: var(--correct);
-  animation: ill-celebrate 0.5s ease;
+  animation: lumo-celebrate 0.5s ease;
 }
 
-.ill-option.ill-wrong {
+.lumo-option.lumo-wrong {
   background: var(--wrong-bg);
   border-color: var(--wrong);
   color: var(--wrong);
 }
 
-.ill-option.ill-correct-highlight {
+.lumo-option.lumo-correct-highlight {
   background: var(--correct-bg);
   border-color: var(--correct);
   color: var(--correct);
 }
 
-.ill-option-marker {
+.lumo-option-marker {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -354,23 +354,23 @@ body {
   color: var(--text-muted);
 }
 
-.ill-option.ill-correct .ill-option-marker {
+.lumo-option.lumo-correct .lumo-option-marker {
   background: var(--correct);
   color: white;
-  animation: ill-check-bounce 0.4s ease;
+  animation: lumo-check-bounce 0.4s ease;
 }
 
-.ill-option.ill-wrong .ill-option-marker {
+.lumo-option.lumo-wrong .lumo-option-marker {
   background: var(--wrong);
   color: white;
 }
 
-.ill-option.ill-correct-highlight .ill-option-marker {
+.lumo-option.lumo-correct-highlight .lumo-option-marker {
   background: var(--correct);
   color: white;
 }
 
-.ill-explanation-box {
+.lumo-explanation-box {
   padding: 12px;
   background: var(--accent-light);
   border-radius: 8px;
@@ -378,28 +378,28 @@ body {
   color: var(--text);
   line-height: 1.6;
   border-left: 3px solid var(--accent);
-  animation: ill-fade-in 0.4s ease;
+  animation: lumo-fade-in 0.4s ease;
 }
 
-.ill-explanation-box.ill-success {
+.lumo-explanation-box.lumo-success {
   border-left-color: var(--correct);
 }
 
-.ill-explanation-box.ill-retry {
+.lumo-explanation-box.lumo-retry {
   border-left-color: var(--accent);
 }
 
-.ill-explanation-label {
+.lumo-explanation-label {
   font-weight: 600;
   color: var(--accent);
   margin-bottom: 4px;
 }
 
-.ill-explanation-box.ill-success .ill-explanation-label {
+.lumo-explanation-box.lumo-success .lumo-explanation-label {
   color: var(--correct);
 }
 
-@keyframes ill-fade-in {
+@keyframes lumo-fade-in {
   from {
     opacity: 0;
     transform: translateY(4px);
@@ -410,20 +410,20 @@ body {
   }
 }
 
-@keyframes ill-celebrate {
+@keyframes lumo-celebrate {
   0% { transform: scale(1); }
   40% { transform: scale(1.05); }
   70% { transform: scale(0.98); }
   100% { transform: scale(1); }
 }
 
-@keyframes ill-check-bounce {
+@keyframes lumo-check-bounce {
   0% { transform: scale(0); }
   60% { transform: scale(1.3); }
   100% { transform: scale(1); }
 }
 
-.ill-continue-btn {
+.lumo-continue-btn {
   align-self: flex-start;
   background: var(--accent);
   color: white;
@@ -435,33 +435,33 @@ body {
   cursor: pointer;
   font-family: system-ui, -apple-system, sans-serif;
   transition: filter 0.15s ease, transform 0.1s ease;
-  animation: ill-fade-in 0.3s ease;
+  animation: lumo-fade-in 0.3s ease;
 }
 
-.ill-continue-btn:hover {
+.lumo-continue-btn:hover {
   filter: brightness(1.1);
   transform: translateY(-1px);
 }
 
-.ill-sending {
+.lumo-sending {
   font-size: 12px;
   color: var(--text-muted);
   font-style: italic;
-  animation: ill-fade-in 0.3s ease;
+  animation: lumo-fade-in 0.3s ease;
 }
 
 /* ============================================================
    Reduced motion
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
-  .ill-spinner,
-  .ill-explanation-box,
-  .ill-sending,
-  .ill-continue-btn,
-  .ill-option.ill-correct,
-  .ill-option.ill-correct .ill-option-marker,
-  .ill-node-clicked,
-  .ill-fill-root.ill-celebrate {
+  .lumo-spinner,
+  .lumo-explanation-box,
+  .lumo-sending,
+  .lumo-continue-btn,
+  .lumo-option.lumo-correct,
+  .lumo-option.lumo-correct .lumo-option-marker,
+  .lumo-node-clicked,
+  .lumo-fill-root.lumo-celebrate {
     animation: none;
     transition: none;
   }

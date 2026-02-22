@@ -14,8 +14,8 @@ import {
 
 /* ── Component ───────────────────────────────────────────── */
 
-function IlluminateMindmap() {
-  const toolState = useToolInfo<"illuminate-mindmap">();
+function LumoMap() {
+  const toolState = useToolInfo<"lumo-map">();
   const sendFollowUp = useSendFollowUpMessage();
   const [state, setState] = useWidgetState<{ selectedNode: string | null }>({
     selectedNode: null,
@@ -28,8 +28,8 @@ function IlluminateMindmap() {
 
   const input = toolState.isSuccess ? toolState.input : null;
 
-  const lightPalette = ["#6366f1", "#3b82f6", "#8b5cf6", "#22c55e", "#f59e0b", "#ef4444"];
-  const darkPalette = ["#818cf8", "#60a5fa", "#a78bfa", "#4ade80", "#fbbf24", "#f87171"];
+  const lightPalette = ["#F27D2A", "#3b82f6", "#8b5cf6", "#3EBD7A", "#FFBA42", "#E8453C"];
+  const darkPalette = ["#FFBA42", "#60a5fa", "#a78bfa", "#5ED99A", "#F27D2A", "#F27066"];
 
   useEffect(() => {
     if (!input || !svgRef.current) return;
@@ -62,8 +62,8 @@ function IlluminateMindmap() {
         el.addEventListener("click", () => {
           setState({ selectedNode: label });
           setClickedLabel(label);
-          el.classList.add("ill-node-clicked");
-          setTimeout(() => el.classList.remove("ill-node-clicked"), 700);
+          el.classList.add("lumo-node-clicked");
+          setTimeout(() => el.classList.remove("lumo-node-clicked"), 700);
           void sendFollowUp(
             `Explain '${label}' in more detail. Context: '${label}' is a topic in the "${capturedInput.title}" mind map.`,
           );
@@ -91,8 +91,8 @@ function IlluminateMindmap() {
 
   if (!toolState.isSuccess || !input) {
     return (
-      <div className="ill-loading">
-        <div className="ill-spinner" />
+      <div className="lumo-loading">
+        <div className="lumo-spinner" />
       </div>
     );
   }
@@ -103,34 +103,34 @@ function IlluminateMindmap() {
 
   return (
     <DataLLM content={dataContent}>
-      <div className="ill-diagram-root" data-theme={theme}>
-        <div className="ill-diagram-header">
-          <h2 className="ill-title">{title}</h2>
+      <div className="lumo-diagram-root" data-theme={theme}>
+        <div className="lumo-diagram-header">
+          <h2 className="lumo-title">{title}</h2>
           {stepInfo && (
-            <span className="ill-step-badge">
+            <span className="lumo-step-badge">
               Step {stepInfo.current}/{stepInfo.total}
             </span>
           )}
         </div>
 
         {stepInfo && (
-          <div className="ill-progress-track">
+          <div className="lumo-progress-track">
             <div
-              className="ill-progress-fill"
+              className="lumo-progress-fill"
               style={{ width: `${(stepInfo.current / stepInfo.total) * 100}%` }}
             />
           </div>
         )}
 
-        <div className={`ill-mindmap-container${theme === "dark" ? " markmap-dark" : ""}`}>
+        <div className={`lumo-mindmap-container${theme === "dark" ? " markmap-dark" : ""}`}>
           <svg
             ref={svgRef}
-            className="ill-mindmap-svg"
+            className="lumo-mindmap-svg"
           />
         </div>
 
-        {explanation && <p className="ill-explanation">{explanation}</p>}
-        <p className="ill-hint">
+        {explanation && <p className="lumo-explanation">{explanation}</p>}
+        <p className="lumo-hint">
           {clickedLabel ? `Exploring ${clickedLabel}…` : "Click any branch to explore it further"}
         </p>
       </div>
@@ -138,5 +138,5 @@ function IlluminateMindmap() {
   );
 }
 
-export default IlluminateMindmap;
-mountWidget(<IlluminateMindmap />);
+export default LumoMap;
+mountWidget(<LumoMap />);
