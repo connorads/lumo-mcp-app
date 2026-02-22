@@ -292,6 +292,29 @@ body {
   border-radius: 2px;
 }
 
+.lumo-fill-input.lumo-revealed {
+  border-bottom-color: var(--accent);
+  color: var(--accent);
+  font-style: italic;
+}
+
+.lumo-reveal-btn {
+  font-size: 11px;
+  color: var(--accent);
+  background: transparent;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 1px 8px;
+  margin-top: 2px;
+  cursor: pointer;
+  font-family: system-ui, -apple-system, sans-serif;
+  transition: background 0.15s ease;
+}
+
+.lumo-reveal-btn:hover {
+  background: var(--accent-light);
+}
+
 .lumo-fill-hint {
   font-size: 12px;
   font-style: italic;

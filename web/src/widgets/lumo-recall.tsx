@@ -15,6 +15,7 @@ import {
 type BlankState = {
   value: string;
   correct: boolean | null; // null = not checked yet
+  revealed?: boolean;
 };
 
 type WidgetState = {
@@ -47,6 +48,8 @@ function normalise(s: string): string {
 
 /* ── Component ───────────────────────────────────────────── */
 
+const REVEAL_THRESHOLD = 2;
+
 function LumoRecall() {
   const toolState = useToolInfo<"lumo-recall">();
   const sendFollowUp = useSendFollowUpMessage();
@@ -56,6 +59,7 @@ function LumoRecall() {
   });
   const { theme } = useLayout();
   const [followUpSent, setFollowUpSent] = useState(false);
+  const [attempts, setAttempts] = useState<Record<string, number>>({});
 
   const input = toolState.isSuccess ? toolState.input : null;
 
@@ -75,22 +79,45 @@ function LumoRecall() {
   const checkAnswer = (id: string, value: string) => {
     const blank = blanks.find((b) => b.id === id);
     if (!blank) return;
+    // Skip if already revealed
+    if (answers[id]?.revealed) return;
     const correct = normalise(value) === normalise(blank.answer);
-    const nextAnswers = {
+    if (!correct) {
+      setAttempts((prev) => ({ ...prev, [id]: (prev[id] ?? 0) + 1 }));
+    }
+    const nextAnswers: Record<string, BlankState> = {
       ...answers,
       [id]: { value, correct },
     };
-    const nextAllCorrect =
-      blanks.every((b) => nextAnswers[b.id]?.correct === true);
+    const nextAllCorrect = blanks.every(
+      (b) => nextAnswers[b.id]?.correct === true || nextAnswers[b.id]?.revealed === true,
+    );
     setState({ answers: nextAnswers, allCorrect: nextAllCorrect });
   };
+
+  const revealAnswer = (id: string) => {
+    const blank = blanks.find((b) => b.id === id);
+    if (!blank) return;
+    const nextAnswers: Record<string, BlankState> = {
+      ...answers,
+      [id]: { value: blank.answer, correct: false, revealed: true },
+    };
+    const nextAllCorrect = blanks.every(
+      (b) => nextAnswers[b.id]?.correct === true || nextAnswers[b.id]?.revealed === true,
+    );
+    setState({ answers: nextAnswers, allCorrect: nextAllCorrect });
+  };
+
+  const anyRevealed = blanks.some((b) => answers[b.id]?.revealed);
 
   const sendContinue = () => {
     if (followUpSent) return;
     setFollowUpSent(true);
-    void sendFollowUp(
-      `I completed the fill-in-the-blank exercise about "${topic}" — continue teaching me.`,
-    );
+    const revealedCount = blanks.filter((b) => answers[b.id]?.revealed).length;
+    const prompt = anyRevealed
+      ? `I completed the fill-in-the-blank exercise about "${topic}" but needed to reveal ${revealedCount} answer${revealedCount !== 1 ? "s" : ""} — please re-explain those concepts before continuing.`
+      : `I completed the fill-in-the-blank exercise about "${topic}" — continue teaching me.`;
+    void sendFollowUp(prompt);
   };
 
   const dataContent = allCorrect
@@ -113,21 +140,26 @@ function LumoRecall() {
             const blankDef = blanks.find((b) => b.id === seg.id);
             const blankState = answers[seg.id];
             const isCorrect = blankState?.correct === true;
-            const isWrong = blankState?.correct === false;
+            const isWrong = blankState?.correct === false && !blankState?.revealed;
+            const isRevealed = blankState?.revealed === true;
+            const blankAttempts = attempts[seg.id] ?? 0;
+            const showRevealBtn = blankAttempts >= REVEAL_THRESHOLD && !isCorrect && !isRevealed;
 
             return (
               <span key={i} className="lumo-fill-blank-wrap">
                 <input
+                  key={isRevealed ? `${seg.id}-revealed` : seg.id}
                   className={[
                     "lumo-fill-input",
                     isCorrect ? "lumo-correct" : "",
                     isWrong ? "lumo-wrong" : "",
+                    isRevealed ? "lumo-revealed" : "",
                   ]
                     .filter(Boolean)
                     .join(" ")}
                   type="text"
                   aria-label={`blank ${seg.id}`}
-                  readOnly={isCorrect}
+                  readOnly={isCorrect || isRevealed}
                   defaultValue={blankState?.value ?? ""}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -135,11 +167,16 @@ function LumoRecall() {
                     }
                   }}
                   onBlur={(e) => {
-                    if (!isCorrect) checkAnswer(seg.id, e.currentTarget.value);
+                    if (!isCorrect && !isRevealed) checkAnswer(seg.id, e.currentTarget.value);
                   }}
                 />
                 {isWrong && blankDef?.hint && (
                   <span className="lumo-fill-hint">{blankDef.hint}</span>
+                )}
+                {showRevealBtn && (
+                  <button className="lumo-reveal-btn" onClick={() => revealAnswer(seg.id)}>
+                    Reveal
+                  </button>
                 )}
               </span>
             );
@@ -148,7 +185,9 @@ function LumoRecall() {
 
         {allCorrect && (
           <div className="lumo-explanation-box lumo-success">
-            <div className="lumo-explanation-label">All correct!</div>
+            <div className="lumo-explanation-label">
+              {anyRevealed ? "Here are the answers:" : "All correct!"}
+            </div>
             {explanation}
           </div>
         )}

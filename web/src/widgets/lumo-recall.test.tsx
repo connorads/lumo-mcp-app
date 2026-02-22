@@ -167,4 +167,86 @@ describe("LumoRecall", () => {
       screen.getByText(fillBlankInput.blanks[0].hint!),
     ).toBeInTheDocument();
   });
+
+  it("Reveal button appears after 2 wrong attempts", () => {
+    stubOpenAI();
+    render(<LumoRecall />);
+    const inputs = screen.getAllByRole("textbox");
+
+    // No reveal button before any attempts
+    expect(screen.queryByRole("button", { name: /Reveal/ })).not.toBeInTheDocument();
+
+    // First wrong attempt
+    fireEvent.change(inputs[0]!, { target: { value: "wrong1" } });
+    fireEvent.keyDown(inputs[0]!, { key: "Enter" });
+    expect(screen.queryByRole("button", { name: /Reveal/ })).not.toBeInTheDocument();
+
+    // Second wrong attempt — button should appear
+    fireEvent.change(inputs[0]!, { target: { value: "wrong2" } });
+    fireEvent.keyDown(inputs[0]!, { key: "Enter" });
+    expect(screen.getByRole("button", { name: /Reveal/ })).toBeInTheDocument();
+  });
+
+  it("clicking Reveal fills the answer and locks input with revealed:true", () => {
+    const { setWidgetState } = stubOpenAI();
+    render(<LumoRecall />);
+    const inputs = screen.getAllByRole("textbox");
+
+    // Two wrong attempts to show Reveal button
+    fireEvent.change(inputs[0]!, { target: { value: "wrong1" } });
+    fireEvent.keyDown(inputs[0]!, { key: "Enter" });
+    fireEvent.change(inputs[0]!, { target: { value: "wrong2" } });
+    fireEvent.keyDown(inputs[0]!, { key: "Enter" });
+
+    const revealBtn = screen.getByRole("button", { name: /Reveal/ });
+    fireEvent.click(revealBtn);
+
+    expect(setWidgetState).toHaveBeenCalledWith(
+      expect.objectContaining({
+        modelContent: expect.objectContaining({
+          answers: expect.objectContaining({
+            role: expect.objectContaining({ revealed: true }),
+          }),
+        }),
+      }),
+    );
+  });
+
+  it("explanation shows 'Here are the answers:' when any blank was revealed", () => {
+    stubOpenAI({
+      widgetState: {
+        modelContent: {
+          answers: {
+            role: { value: "authorisation server", correct: false, revealed: true },
+            recipient: { value: "client", correct: true },
+          },
+          allCorrect: true,
+        },
+      },
+    });
+    render(<LumoRecall />);
+    expect(screen.getByText("Here are the answers:")).toBeInTheDocument();
+  });
+
+  it("follow-up mentions revealed count when blanks were revealed", () => {
+    const { sendFollowUpMessage } = stubOpenAI({
+      widgetState: {
+        modelContent: {
+          answers: {
+            role: { value: "authorisation server", correct: false, revealed: true },
+            recipient: { value: "client", correct: true },
+          },
+          allCorrect: true,
+        },
+      },
+    });
+    render(<LumoRecall />);
+    const continueBtn = screen.getByRole("button", { name: /Continue/ });
+    fireEvent.click(continueBtn);
+    expect(sendFollowUpMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        prompt: expect.stringMatching(/reveal/i),
+      }),
+    );
+  });
 });
