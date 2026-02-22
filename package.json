@@ -1,8 +1,8 @@
 {
-  "name": "claude-code-london-03-hackathon",
+  "name": "lumo",
   "version": "0.0.1",
   "private": true,
-  "description": "Alpic MCP Server Template",
+  "description": "MCP app that teaches any concept with interactive diagrams, mind maps, quizzes, and fill-in-the-blank exercises inside your chat",
   "type": "module",
   "scripts": {
     "dev": "skybridge dev",

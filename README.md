@@ -1,97 +1,58 @@
-# Skybridge Starter
+<div align="center">
 
-A minimal TypeScript template for building MCP and ChatGPT Apps with the [Skybridge](https://docs.skybridge.tech/home) framework.
+<img src="web/public/lumo-fox.svg" alt="Lumo Fox" width="96" height="96">
 
-## Getting Started
+# Lumo
 
-### Prerequisites
+**See it click.**
 
-- Node.js 24+
-- HTTP tunnel such as [ngrok](https://ngrok.com/download) if you want to test with remote MCP hosts like ChatGPT or Claude.ai.
+A tutor in your chat that draws diagrams you click to explore deeper.
 
-### Local Development
+</div>
 
-#### 1. Install
+---
+
+Lumo is an interactive visual AI tutor built as an [MCP App](https://modelcontextprotocol.io). Ask it to teach you anything and it creates a live, adaptive lesson — diagrams, mind maps, quizzes, and fill-in-the-blank exercises — all inside the chat.
+
+## How it works
+
+Lumo follows a **learning spiral** guided by [Bloom's taxonomy](https://en.wikipedia.org/wiki/Bloom%27s_taxonomy):
+
+```
+Explore → Interact → Drill → Check → Adapt → Suggest
+```
+
+1. **Explore** — the model draws an interactive diagram or mind map
+2. **Interact** — you click a node to drill deeper
+3. **Check** — a quiz or fill-in-the-blank tests your understanding
+4. **Adapt** — correct answers advance; wrong answers trigger a different explanation
+5. **Suggest** — the model offers adjacent topics to continue
+
+No fixed endpoint — the session flows naturally until you stop.
+
+## Widgets
+
+| Widget | What it does | Bloom's level |
+|--------|-------------|---------------|
+| **lumo-sketch** | Interactive [Mermaid.js](https://mermaid.js.org/) diagrams — flowcharts, sequence, state, and class diagrams with clickable nodes | Remember / Understand |
+| **lumo-map** | Zoomable, pannable mind maps from Markdown headings — click any branch to explore | Remember |
+| **lumo-quiz** | Multiple-choice questions testing recognition | Remember / Understand |
+| **lumo-recall** | Fill-in-the-blank exercises testing active recall from memory | Apply / Analyse |
+
+## Tech stack
+
+TypeScript · React 19 · [Skybridge](https://docs.skybridge.tech/) · MCP protocol · Mermaid.js · [Markmap](https://markmap.js.org/) · Zod · Vite · Vitest
+
+## Development
 
 ```bash
-npm install
-# or
-yarn install
-# or
-pnpm install
-# or
 bun install
+bun dev        # MCP server + devtools at localhost:3000
+bun run test   # run tests
 ```
 
-#### 2. Start your local server
+## Credits
 
-Run the development server from the root directory:
+Built at **Claude Code London Hack Night 03** (20 Feb 2026) using [Claude Code](https://docs.anthropic.com/en/docs/claude-code).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-This command starts:
-- Your MCP server at `http://localhost:3000/mcp`.
-- Skybridge DevTools UI at `http://localhost:3000/`.
-
-#### 3. Project structure
-
-```
-├── server/
-│   └── src/
-│       └── index.ts      # Server entry point
-├── web/
-│   ├── src/
-│   │   ├── widgets/      # React components (one per widget)
-│   │   ├── helpers.ts    # Shared utilities
-│   │   └── index.css     # Global styles
-│   └── vite.config.ts
-├── alpic.json            # Deployment config
-├── nodemon.json          # Dev server config
-└── package.json
-```
-
-### Create your first widget
-
-#### 1. Add a new widget
-
-- Register a widget in `server/src/server.ts` with a unique name (e.g., `my-widget`) using [`registerWidget`](https://docs.skybridge.tech/api-reference/register-widget)
-- Create a matching React component at `web/src/widgets/my-widget.tsx`. **The file name must match the widget name exactly**.
-
-#### 2. Edit widgets with Hot Module Replacement (HMR)
-
-Edit and save components in `web/src/widgets/` — changes will appear instantly inside your App.
-
-#### 3. Edit server code
-
-Modify files in `server/` and refresh the connection with your testing MCP Client to see the changes.
-
-### Testing your App
-
-You can test your App locally by using our DevTools UI on `localhost:3000` while running the `pnpm dev` command.
-
-To test your app with other MCP Clients like ChatGPT, Claude or VSCode, see [Testing Your App](https://docs.skybridge.tech/quickstart/test-your-app).
-
-
-## Deploy to Production
-
-Skybridge is infrastructure vendor agnostic, and your app can be deployed on any cloud platform supporting MCP.
-
-The simplest way to deploy your App in minutes is [Alpic](https://alpic.ai/).
-1. Create an account on [Alpic platform](https://app.alpic.ai/). 
-2. Connect your GitHub repository to automatically deploy at each commit. 
-3. Use your remote App URL to connect it to MCP Clients, or use the Alpic Playground to easily test your App.
-
-## Resources
-- [Skybridge Documentation](https://docs.skybridge.tech/)
-- [Apps SDK Documentation](https://developers.openai.com/apps-sdk)
-- [MCP Apps Documentation](https://github.com/modelcontextprotocol/ext-apps/tree/main)
-- [Model Context Protocol Documentation](https://modelcontextprotocol.io/)
-- [Alpic Documentation](https://docs.alpic.ai/)
+Powered by the [Skybridge framework](https://github.com/alpic-ai/skybridge) and the [MCP Apps specification](https://github.com/modelcontextprotocol/ext-apps).
