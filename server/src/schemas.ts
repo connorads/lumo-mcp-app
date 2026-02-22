@@ -16,7 +16,7 @@ export const diagramInputSchema = z.object({
     .record(z.string(), z.string())
     .optional()
     .describe(
-      "IMPORTANT: Always provide for every node. Frame as questions for elaborative interrogation — e.g. 'Why must the auth server validate before issuing?' rather than just 'Validates credentials'. Keys must match node IDs in the Mermaid syntax.",
+      "IMPORTANT: Always provide for every node. Frame as questions for elaborative interrogation — e.g. 'Why must the auth server validate before issuing?' rather than just 'Validates credentials'. Keys must match node IDs in the Mermaid syntax: for flowcharts use the node ID (e.g. 'AuthServer'); for sequenceDiagram use the participant name (e.g. 'API', 'DB'); for stateDiagram-v2 use the state name; for classDiagram use the class name.",
     ),
   stepInfo: z
     .object({

@@ -131,20 +131,23 @@ body {
 .lumo-mermaid-container .node rect,
 .lumo-mermaid-container .node polygon,
 .lumo-mermaid-container .node circle,
-.lumo-mermaid-container .node ellipse {
+.lumo-mermaid-container .node ellipse,
+.lumo-mermaid-container rect.actor-top {
   stroke-width: 2px;
 }
 
 [data-theme="dark"] .lumo-mermaid-container .node rect,
 [data-theme="dark"] .lumo-mermaid-container .node polygon,
 [data-theme="dark"] .lumo-mermaid-container .node circle,
-[data-theme="dark"] .lumo-mermaid-container .node ellipse {
+[data-theme="dark"] .lumo-mermaid-container .node ellipse,
+[data-theme="dark"] .lumo-mermaid-container rect.actor-top {
   stroke: #64748b;
 }
 
 /* Entrance pulse — draws attention to clickable nodes on first render */
 .lumo-mermaid-container .node rect,
-.lumo-mermaid-container .node polygon {
+.lumo-mermaid-container .node polygon,
+.lumo-mermaid-container rect.actor-top {
   animation: lumo-node-entrance 1.5s ease-out;
 }
 
@@ -217,13 +220,17 @@ body {
 }
 
 .lumo-mermaid-container .node:hover rect,
-.lumo-mermaid-container .node:hover polygon {
+.lumo-mermaid-container .node:hover polygon,
+.lumo-mermaid-container g:has(rect.actor-top):hover rect.actor-top,
+.lumo-mermaid-container g.actor-man.actor-top:hover {
   filter: brightness(0.95);
   transition: filter 0.15s ease;
 }
 
 [data-theme="dark"] .lumo-mermaid-container .node:hover rect,
-[data-theme="dark"] .lumo-mermaid-container .node:hover polygon {
+[data-theme="dark"] .lumo-mermaid-container .node:hover polygon,
+[data-theme="dark"] .lumo-mermaid-container g:has(rect.actor-top):hover rect.actor-top,
+[data-theme="dark"] .lumo-mermaid-container g.actor-man.actor-top:hover {
   filter: brightness(1.2);
 }
 

@@ -19,6 +19,26 @@ const MOCK_SVG =
   '<svg><g class="node" id="flowchart-AuthServer-1"><span class="nodeLabel">Auth Server</span></g>' +
   '<g class="node" id="flowchart-ClientApp-2"><span class="nodeLabel">Client App</span></g></svg>';
 
+const MOCK_SEQUENCE_SVG =
+  '<svg>' +
+  '<g><rect class="actor actor-top" name="API" x="0" y="0" width="100" height="40"></rect>' +
+  '<text class="actor actor-box">API Gateway</text></g>' +
+  '<g><rect class="actor actor-top" name="DB" x="200" y="0" width="100" height="40"></rect>' +
+  '<text class="actor actor-box">Database</text></g>' +
+  '<g><rect class="actor actor-bottom" name="API" x="0" y="300" width="100" height="40"></rect>' +
+  '<text class="actor actor-box">API Gateway</text></g>' +
+  '<g><rect class="actor actor-bottom" name="DB" x="200" y="300" width="100" height="40"></rect>' +
+  '<text class="actor actor-box">Database</text></g>' +
+  '</svg>';
+
+const MOCK_STATE_SVG =
+  '<svg><g class="node" id="state-Idle-1"><span class="nodeLabel">Idle</span></g>' +
+  '<g class="node" id="state-Running-2"><span class="nodeLabel">Running</span></g></svg>';
+
+const MOCK_CLASS_SVG =
+  '<svg><g class="node" id="classId-Animal-1"><span class="nodeLabel">Animal</span></g>' +
+  '<g class="node" id="classId-Dog-2"><span class="nodeLabel">Dog</span></g></svg>';
+
 const diagramInput = {
   title: "OAuth2 Authorisation Code Flow",
   mermaid:
@@ -174,5 +194,92 @@ describe("LumoSketch", () => {
     expect(
       screen.getByText("Click any node to explore it further"),
     ).toBeInTheDocument();
+  });
+
+  it("clicking a sequence diagram actor calls sendFollowUpMessage with participant label", async () => {
+    const mermaid = await import("mermaid");
+    vi.mocked(mermaid.default.render).mockResolvedValue({
+      svg: MOCK_SEQUENCE_SVG,
+      bindFunctions: undefined,
+      diagramType: "sequence",
+    });
+    const { sendFollowUpMessage } = stubOpenAI({
+      toolInput: { ...diagramInput, nodeDescriptions: { API: "Why is the API a gateway?" } },
+    });
+    let container!: HTMLElement;
+    await act(async () => {
+      ({ container } = render(<LumoSketch />));
+    });
+    const actorGroup = container.querySelector("g:has(rect.actor-top[name='API'])") as HTMLElement;
+    fireEvent.click(actorGroup);
+    expect(sendFollowUpMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        prompt: expect.stringContaining("API Gateway"),
+      }),
+    );
+  });
+
+  it("sequence diagram only makes top actors clickable, not bottom mirrors", async () => {
+    const mermaid = await import("mermaid");
+    vi.mocked(mermaid.default.render).mockResolvedValue({
+      svg: MOCK_SEQUENCE_SVG,
+      bindFunctions: undefined,
+      diagramType: "sequence",
+    });
+    stubOpenAI();
+    let container!: HTMLElement;
+    await act(async () => {
+      ({ container } = render(<LumoSketch />));
+    });
+    const topActors = container.querySelectorAll("g:has(rect.actor-top)");
+    const bottomActors = container.querySelectorAll("g:has(rect.actor-bottom)");
+    topActors.forEach((el) => expect(el).toHaveAttribute("role", "button"));
+    bottomActors.forEach((el) => expect(el).not.toHaveAttribute("role", "button"));
+  });
+
+  it("clicking a state diagram node extracts correct nodeId (strips state- prefix)", async () => {
+    const mermaid = await import("mermaid");
+    vi.mocked(mermaid.default.render).mockResolvedValue({
+      svg: MOCK_STATE_SVG,
+      bindFunctions: undefined,
+      diagramType: "stateDiagram",
+    });
+    const { sendFollowUpMessage } = stubOpenAI({
+      toolInput: { ...diagramInput, nodeDescriptions: { Idle: "Why is Idle the initial state?" } },
+    });
+    let container!: HTMLElement;
+    await act(async () => {
+      ({ container } = render(<LumoSketch />));
+    });
+    const node = container.querySelector(".node") as HTMLElement;
+    fireEvent.click(node);
+    expect(sendFollowUpMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        prompt: expect.stringContaining("Idle"),
+      }),
+    );
+  });
+
+  it("clicking a class diagram node extracts correct nodeId (strips classId- prefix)", async () => {
+    const mermaid = await import("mermaid");
+    vi.mocked(mermaid.default.render).mockResolvedValue({
+      svg: MOCK_CLASS_SVG,
+      bindFunctions: undefined,
+      diagramType: "classDiagram",
+    });
+    const { sendFollowUpMessage } = stubOpenAI({
+      toolInput: { ...diagramInput, nodeDescriptions: { Animal: "What does Animal define?" } },
+    });
+    let container!: HTMLElement;
+    await act(async () => {
+      ({ container } = render(<LumoSketch />));
+    });
+    const node = container.querySelector(".node") as HTMLElement;
+    fireEvent.click(node);
+    expect(sendFollowUpMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        prompt: expect.stringContaining("Animal"),
+      }),
+    );
   });
 });

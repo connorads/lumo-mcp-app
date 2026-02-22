@@ -11,6 +11,90 @@ import {
   DataLLM,
 } from "../helpers.js";
 
+/* ── Node extraction (diagram-type-aware) ────────────────── */
+
+interface ClickableNode {
+  element: HTMLElement;
+  nodeId: string;
+  label: string;
+}
+
+function extractFlowchartNodes(container: HTMLElement): ReadonlyArray<ClickableNode> {
+  return Array.from(container.querySelectorAll(".node")).map((el) => {
+    const nodeId = el.id?.replace(/^flowchart-/, "").replace(/-\d+$/, "") ?? "";
+    const label =
+      el.querySelector(".nodeLabel")?.textContent?.trim() ??
+      el.querySelector("span")?.textContent?.trim() ??
+      nodeId;
+    return { element: el as HTMLElement, nodeId, label };
+  });
+}
+
+function extractSequenceActors(container: HTMLElement): ReadonlyArray<ClickableNode> {
+  const seen = new Set<string>();
+  const nodes: ClickableNode[] = [];
+
+  // Participant boxes: <rect class="actor actor-top" name="ActorName">
+  container.querySelectorAll("rect.actor-top").forEach((rect) => {
+    const name = rect.getAttribute("name") ?? "";
+    if (!name || seen.has(name)) return;
+    seen.add(name);
+    const g = rect.parentElement as HTMLElement | null;
+    if (!g) return;
+    const label = g.querySelector("text.actor")?.textContent?.trim() ?? name;
+    nodes.push({ element: g, nodeId: name, label });
+  });
+
+  // Stick-figure actors: <g class="actor-man actor-top" name="ActorName">
+  container.querySelectorAll("g.actor-man.actor-top").forEach((g) => {
+    const name = g.getAttribute("name") ?? "";
+    if (!name || seen.has(name)) return;
+    seen.add(name);
+    const label = g.querySelector("text.actor")?.textContent?.trim() ?? name;
+    nodes.push({ element: g as HTMLElement, nodeId: name, label });
+  });
+
+  return nodes;
+}
+
+function extractStateDiagramNodes(container: HTMLElement): ReadonlyArray<ClickableNode> {
+  return Array.from(container.querySelectorAll(".node")).map((el) => {
+    const nodeId = el.id?.replace(/^state-/, "").replace(/-\d+$/, "") ?? "";
+    const label =
+      el.querySelector(".nodeLabel")?.textContent?.trim() ??
+      el.querySelector("span")?.textContent?.trim() ??
+      nodeId;
+    return { element: el as HTMLElement, nodeId, label };
+  });
+}
+
+function extractClassDiagramNodes(container: HTMLElement): ReadonlyArray<ClickableNode> {
+  return Array.from(container.querySelectorAll(".node")).map((el) => {
+    const nodeId = el.id?.replace(/^classId-/, "").replace(/-\d+$/, "") ?? "";
+    const label =
+      el.querySelector(".nodeLabel")?.textContent?.trim() ??
+      el.querySelector("span")?.textContent?.trim() ??
+      nodeId;
+    return { element: el as HTMLElement, nodeId, label };
+  });
+}
+
+function extractClickableNodes(
+  container: HTMLElement,
+  diagramType: string,
+): ReadonlyArray<ClickableNode> {
+  switch (diagramType) {
+    case "sequence":
+      return extractSequenceActors(container);
+    case "stateDiagram":
+      return extractStateDiagramNodes(container);
+    case "classDiagram":
+      return extractClassDiagramNodes(container);
+    default:
+      return extractFlowchartNodes(container);
+  }
+}
+
 /* ── Component ───────────────────────────────────────────── */
 
 function LumoSketch() {
@@ -73,51 +157,47 @@ function LumoSketch() {
 
     mermaid
       .render(renderId, sanitised)
-      .then(({ svg, bindFunctions }) => {
+      .then(({ svg, bindFunctions, diagramType }) => {
         if (!containerRef.current) return;
         containerRef.current.innerHTML = svg;
         if (bindFunctions) bindFunctions(containerRef.current);
 
-        // Attach click handlers to all node elements
-        containerRef.current.querySelectorAll(".node").forEach((el) => {
-          const nodeId = el.id?.replace(/^flowchart-/, "").replace(/-\d+$/, "") ?? "";
-          const label =
-            el.querySelector(".nodeLabel")?.textContent?.trim() ??
-            el.querySelector("span")?.textContent?.trim() ??
-            nodeId;
-          const description = input.nodeDescriptions?.[nodeId];
-          const htmlEl = el as HTMLElement;
+        // Attach click handlers to all clickable elements (diagram-type-aware)
+        extractClickableNodes(containerRef.current, diagramType).forEach(
+          ({ element, nodeId, label }) => {
+            const description = input.nodeDescriptions?.[nodeId];
 
-          htmlEl.style.cursor = "pointer";
-          htmlEl.setAttribute("tabindex", "0");
-          htmlEl.setAttribute("role", "button");
-          htmlEl.setAttribute(
-            "aria-label",
-            description ? `${label}: ${description}` : `Explore ${label}`,
-          );
-          if (description) {
-            htmlEl.title = description;
-          }
-
-          const handleClick = () => {
-            setState({ selectedNodeId: nodeId });
-            setClickedLabel(label);
-            htmlEl.classList.add("lumo-node-clicked");
-            setTimeout(() => htmlEl.classList.remove("lumo-node-clicked"), 700);
-            void sendFollowUp(
-              `Explain '${label}' in more detail with a new diagram. Context: '${label}' is a node in the "${input.title}" diagram.${description ? ` Description: ${description}` : ""}`,
+            element.style.cursor = "pointer";
+            element.setAttribute("tabindex", "0");
+            element.setAttribute("role", "button");
+            element.setAttribute(
+              "aria-label",
+              description ? `${label}: ${description}` : `Explore ${label}`,
             );
-          };
-
-          el.addEventListener("click", handleClick);
-          el.addEventListener("keydown", (e) => {
-            const ke = e as KeyboardEvent;
-            if (ke.key === "Enter" || ke.key === " ") {
-              e.preventDefault();
-              handleClick();
+            if (description) {
+              element.title = description;
             }
-          });
-        });
+
+            const handleClick = () => {
+              setState({ selectedNodeId: nodeId });
+              setClickedLabel(label);
+              element.classList.add("lumo-node-clicked");
+              setTimeout(() => element.classList.remove("lumo-node-clicked"), 700);
+              void sendFollowUp(
+                `Explain '${label}' in more detail with a new diagram. Context: '${label}' is a node in the "${input.title}" diagram.${description ? ` Description: ${description}` : ""}`,
+              );
+            };
+
+            element.addEventListener("click", handleClick);
+            element.addEventListener("keydown", (e) => {
+              const ke = e as KeyboardEvent;
+              if (ke.key === "Enter" || ke.key === " ") {
+                e.preventDefault();
+                handleClick();
+              }
+            });
+          },
+        );
         setRenderError(null);
       })
       .catch((err: unknown) => {
